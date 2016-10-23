@@ -80,6 +80,7 @@ class Voronoi {
 	private function makeSureNoDuplicatePoints(points:Array<Point>) {
 		var h = new Map<String, Point>();
 		for (p in points) {
+			trace(p.toString());
 			if (h.exists(p.toString())) {
 				throw "Duplicate points not supported yet!";
 			}
@@ -213,7 +214,7 @@ class Voronoi {
 		return _sites.regions(plotBounds);
 	}
 	
-	public function siteColors(referenceImage:BitmapData = null):Array<UInt>
+	public function siteColors(referenceImage:BitmapData = null):Array<Int>
 	{
 		return _sites.siteColors(referenceImage);
 	}

@@ -697,7 +697,7 @@ class VoronoiMap {
 		  
 		  //Haxe port
 		  //r.watershed_size = 1 + (r.watershed_size || 0);
-		  r.watershed_size = 1 + (r.watershed_size==null ? 0 : r.watershed_size);
+		  r.watershed_size = 1 + r.watershed_size;
         }
     }
 	
@@ -725,11 +725,11 @@ class VoronoiMap {
 	  
 				//Haxe port
 				//q.river = (q.river || 0) + 1;
-				q.river = (q.river==null ? 0 : q.river) + 1;
+				q.river = q.river + 1;
 	  
 				//Haxe port
 				//q.downslope.river = (q.downslope.river || 0) + 1;  // TODO: fix double count
-				q.downslope.river = (q.downslope.river==null ? 0 : q.downslope.river) + 1;
+				q.downslope.river = q.downslope.river + 1;
 	  
 				q = q.downslope;
 			}
