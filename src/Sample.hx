@@ -1,5 +1,6 @@
 package;
 
+import hxlpers.colors.RndColor;
 import lime.math.Vector2;
 import openfl.display.Graphics;
 import openfl.display.Shape;
@@ -10,6 +11,7 @@ import openfl.geom.Point;
 import openfl.Lib;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
+import voronoimap.graph.Edge;
 import voronoimap.VoronoiMap;
 using Vector2Extender;
 using CenterExtender;
@@ -41,15 +43,37 @@ class Sample extends Sprite
 		map.go1ImprovePoints(8);
 		map.go2BuildGraph();
 		
-		
-		map.centers = map.centers.filter(function(center:Center)
+		var innerCenters = map.centers.filter(function(center:Center)
 		{
 			return center.getNeighbors().length == center.corners.length;
 		});
 		
+		for (center in map.centers)
+		{
+			if (center.borders.length != center.corners.length)
+			{
+				trace(center.borders.length, center.corners.length);
+				for (border in center.borders)
+				{
+					trace(border.d0, border.d1, border.d0 == border.d1);
+				}
+			}
+		}
 		
-		var zoneCanvas = createCells(map.centers);
-		zoneCanvas.alpha = 0.1;
+		
+		
+		
+		
+		
+		var zoneCanvas = createCellViews(innerCenters);
+		zoneCanvas.name = "zoneCanvas";
+		var edgeCanvas = createEdgeViews(map.edges);
+		edgeCanvas.name = "edgeCanvas";
+		
+		zoneCanvas.alpha = 
+		edgeCanvas.alpha = 
+		0.1;
+		//zoneCanvas.alpha = 0.1;
 		
 		
 		/*var centerCanvas = drawPoints(map.centers.map(function(center)
@@ -57,39 +81,30 @@ class Sample extends Sprite
 			return center.point;
 		}));*/
 
-		zoneCanvas.scaleY = /*centerCanvas.scaleY = */stg.stageHeight / stg.stageWidth;
+		zoneCanvas.scaleY = 
+		edgeCanvas.scaleY = 
+		//centerCanvas.scaleY = 
+		stg.stageHeight / stg.stageWidth;
 
 		addChild(zoneCanvas);
+		//addChild(edgeCanvas);
 		//addChild(centerCanvas);
 		
-		zoneCanvas.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-		zoneCanvas.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+		zoneCanvas.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverOut);
+		zoneCanvas.addEventListener(MouseEvent.MOUSE_OUT, onMouseOverOut);
 		
 	}
 	
-	private function onMouseOut(e:MouseEvent):Void 
+	private function onMouseOverOut(e:MouseEvent):Void 
 	{
-		var center = cast(cellBySprite.get(e.target), Center);
+		var center = cellBySprite.get(e.target);
 		for (neighbor in center.getNeighbors())
 		{
 			var neighborSprite = spriteByCell.get(neighbor);
 			if (neighborSprite != null)
 			{
-				spriteByCell.get(neighbor).transform.colorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0);
-			}
-		}
-	}
-	
-	private function onMouseOver(e:MouseEvent):Void 
-	{
-		var center = cast(cellBySprite.get(e.target), Center);
-		trace(center.borders.length, center.getNeighbors().length, center.corners.length);
-		for (neighbor in center.getNeighbors())
-		{
-			var neighborSprite = spriteByCell.get(neighbor);
-			if (neighborSprite != null)
-			{
-				neighborSprite.transform.colorTransform = new ColorTransform(1, 1, 1, 1, 128, 128, 128);
+				var colorOffset = e.type == MouseEvent.MOUSE_OVER ? 128 : 0;
+				neighborSprite.transform.colorTransform = new ColorTransform(1, 1, 1, 1, colorOffset, colorOffset, colorOffset);
 			}
 		}
 	}
@@ -106,41 +121,37 @@ class Sample extends Sprite
 		return canvas;
 	}
 	
-	function createCells(centers:Array<Center>):Sprite
+	function createCellViews(centers:Array<Center>):Sprite
 	{
 		var sprite = new Sprite();
 		for (center in centers)
 		{
-			var cellView = createCellView(center);
-			sprite.addChild(cellView);
-			cellBySprite.set(cellView, center); 
-			spriteByCell.set(center, cellView);
+			var cellView = new CellView(center);
+			sprite.addChild(cellView.sprite);
+			cellBySprite.set(cellView.sprite, center); 
+			spriteByCell.set(center, cellView.sprite);
 		}
 		return sprite;
 	}
 	
-	function createCellView(center:Center):Sprite
+	function createEdgeViews(edges:Array<Edge>):Sprite
 	{
 		var sprite = new Sprite();
-		var graphics = sprite.graphics;
-		//trace(center.borders.length, center.getNeighbors().length);
-		
-		graphics.beginFill(Std.random(0xffffff));
-		var corners = center.corners.copy();
-		corners.sort(function(cornerA:Corner, cornerB:Corner)
+		for (edge in edges)
 		{
-			var va = new Vector2(cornerA.point.x - center.point.x, cornerA.point.y - center.point.y);
-			var vb = new Vector2(cornerB.point.x - center.point.x, cornerB.point.y - center.point.y);
-			return Std.int(va.getAngle()*100 - vb.getAngle()*100);
-		});
-		var lastCorner = corners[corners.length - 1];
-		graphics.moveTo(lastCorner.point.x, lastCorner.point.y);
-		for (corner in corners)
-		{
-			graphics.lineTo(corner.point.x, corner.point.y);
+			createEdge(edge, sprite.graphics);
 		}
-		graphics.endFill();
 		return sprite;
+	}
+	
+	function createEdge(edge:Edge, graphics:Graphics)
+	{
+		if (edge.v0 != null && edge.v1 != null)
+		{
+			graphics.lineStyle(2, 0xff0000);
+			graphics.moveTo(edge.v0.point.x, edge.v0.point.y);
+			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
+		}
 	}
 	
 	
