@@ -1,9 +1,11 @@
 package;
 import hxlpers.colors.RndColor;
 import lime.math.Vector2;
+import openfl.display.Graphics;
 import openfl.display.Sprite;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
+import voronoimap.graph.Edge;
 using Vector2Extender;
 /**
  * ...
@@ -20,12 +22,15 @@ class CellView
 		
 		this.center = center;
 		sprite = new Sprite();
+		sprite.alpha = center.elevation;
 		
 		sprite.name = "cellView" + uid++;// center.point.x + ',' + center.point.y;
 		sprite.mouseChildren = false;
 		
 		sprite.addChild(createZone());
-		//addChild(createCenter());
+		sprite.addChild(createCenter());
+		sprite.addChild(createBorders());
+		//sprite.addChild(createCorners());
 	}
 	
 	function createZone():Sprite
@@ -62,5 +67,29 @@ class CellView
 		graphics.endFill();
 		return sprite;
 	}
+	
+	function createBorders():Sprite
+	{
+		var sprite = new Sprite();
+		for (edge in center.borders)
+		{
+			drawBorder(edge, sprite.graphics);
+		}
+		return sprite;
+	}
+	
+	function drawBorder(edge:Edge, graphics:Graphics)
+	{
+		if (edge.v0 != null && edge.v1 != null)
+		{
+			graphics.lineStyle(2, 0x000000, 0.5);
+			graphics.moveTo(edge.v0.point.x, edge.v0.point.y);
+			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
+		}
+	}
+	
+	
+	
+	
 	
 }

@@ -12,6 +12,7 @@ import openfl.Lib;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
 import voronoimap.graph.Edge;
+import voronoimap.IslandShape;
 import voronoimap.VoronoiMap;
 using Vector2Extender;
 using CenterExtender;
@@ -34,7 +35,9 @@ class Sample extends Sprite
 		
 		var stg = Lib.current.stage;
 		
-		var map = new VoronoiMap( { width:stg.stageWidth, height:stg.stageWidth} );
+		var map = new VoronoiMap( { width:stg.stageWidth, height:stg.stageWidth } );
+		
+		
 		//map.go0PlacePoints(10);
 		for (i in 0...100)
 		{
@@ -42,6 +45,9 @@ class Sample extends Sprite
 		}
 		map.go1ImprovePoints(8);
 		map.go2BuildGraph();
+		
+		map.islandShape = IslandShape.makeRadial(1);
+		map.go3AssignElevations();
 		
 		var innerCenters = map.centers.filter(function(center:Center)
 		{
@@ -67,8 +73,12 @@ class Sample extends Sprite
 		
 		var zoneCanvas = createCellViews(innerCenters);
 		zoneCanvas.name = "zoneCanvas";
+		
 		var edgeCanvas = createEdgeViews(map.edges);
 		edgeCanvas.name = "edgeCanvas";
+		
+		var cornerCanvas = createCorners(map.corners);
+		cornerCanvas.name = "cornerCanvas";
 		
 		zoneCanvas.alpha = 
 		edgeCanvas.alpha = 
@@ -84,11 +94,13 @@ class Sample extends Sprite
 		zoneCanvas.scaleY = 
 		edgeCanvas.scaleY = 
 		//centerCanvas.scaleY = 
+		cornerCanvas.scaleY =
 		stg.stageHeight / stg.stageWidth;
 
 		addChild(zoneCanvas);
 		//addChild(edgeCanvas);
 		//addChild(centerCanvas);
+		addChild(cornerCanvas);
 		
 		zoneCanvas.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverOut);
 		zoneCanvas.addEventListener(MouseEvent.MOUSE_OUT, onMouseOverOut);
@@ -104,7 +116,7 @@ class Sample extends Sprite
 			if (neighborSprite != null)
 			{
 				var colorOffset = e.type == MouseEvent.MOUSE_OVER ? 128 : 0;
-				neighborSprite.transform.colorTransform = new ColorTransform(1, 1, 1, 1, colorOffset, colorOffset, colorOffset);
+				neighborSprite.transform.colorTransform = new ColorTransform(1, 1, 1, 1, colorOffset, colorOffset, colorOffset, colorOffset);
 			}
 		}
 	}
@@ -126,6 +138,7 @@ class Sample extends Sprite
 		var sprite = new Sprite();
 		for (center in centers)
 		{
+			trace(center.elevation);
 			var cellView = new CellView(center);
 			sprite.addChild(cellView.sprite);
 			cellBySprite.set(cellView.sprite, center); 
@@ -153,6 +166,27 @@ class Sample extends Sprite
 			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
 		}
 	}
+	
+	
+	function createCorners(corners:Array<Corner>):Sprite
+	{
+		var sprite = new Sprite();
+		for (corner in corners)
+		{
+			drawCorner(corner, sprite.graphics);
+		}
+		return sprite;
+	}
+	
+	function drawCorner(corner:Corner, graphics:Graphics) 
+	{
+		graphics.beginFill(0xffffff);
+		graphics.drawCircle(corner.point.x, corner.point.y, 1);
+		graphics.endFill();
+		trace( corner.elevation);
+	}
+	
+	
 	
 	
 }
