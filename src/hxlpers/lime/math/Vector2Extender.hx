@@ -1,4 +1,4 @@
-package;
+package hxlpers.lime.math;
 import lime.math.Vector2;
 import openfl.geom.Point;
 

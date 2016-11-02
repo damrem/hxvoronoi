@@ -1,12 +1,15 @@
 package;
 import hxlpers.colors.RndColor;
+import lime.math.color.ARGB;
 import lime.math.Vector2;
 import openfl.display.Graphics;
 import openfl.display.Sprite;
+import openfl.geom.ColorTransform;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
 import voronoimap.graph.Edge;
-using Vector2Extender;
+using hxlpers.lime.math.Vector2Extender;
+using hxlpers.openfl.geom.ColorTransformExtender;
 /**
  * ...
  * @author damrem
@@ -16,21 +19,52 @@ class CellView
 	public var center(default, null):Center;
 	public var sprite:Sprite;
 	static var uid:UInt = 0;
+	var defaultColorTransform:ColorTransform;
+	var highlightedColorTransform:ColorTransform;
+	var baseColor:UInt;
 
 	public function new(center:Center) 
 	{
-		
 		this.center = center;
 		sprite = new Sprite();
-		sprite.alpha = center.elevation;
+		sprite.useHandCursor = sprite.buttonMode = true;
+		//sprite.scaleY = 3 / 4;
+		trace(sprite.name);
+		//sprite.alpha = (4+ center.elevation)/5;
+		//sprite.alpha = center.elevation;
 		
-		sprite.name = "cellView" + uid++;// center.point.x + ',' + center.point.y;
-		sprite.mouseChildren = false;
+		//sprite.name = "cellView" + uid++;// center.point.x + ',' + center.point.y;
+		//sprite.mouseChildren = false;
 		
-		sprite.addChild(createZone());
-		sprite.addChild(createCenter());
-		sprite.addChild(createBorders());
+		this.baseColor = 0x00ff00;
+		//sprite.addChild(createBorders());
 		//sprite.addChild(createCorners());
+		
+		baseColor = !center.ocean 
+		? RndColor.green(0.5, 1) + RndColor.red(0.25, 0.5) 
+		: 0x0080ff;
+		
+		trace(baseColor);
+		sprite.addChild(createZone());
+		//sprite.addChild(createCenter());
+		
+		//var bc = new ARGB();
+		//bc.
+		
+		var defaultOffset = Math.round((center.elevation - 0.25) * 256);
+		trace(defaultOffset);
+		//defaultOffset = 0;
+		defaultColorTransform = new ColorTransform(1, 1, 1, 1, defaultOffset, defaultOffset, defaultOffset);
+		highlightedColorTransform = defaultColorTransform.clone();
+		highlightedColorTransform.redOffset = highlightedColorTransform.greenOffset = highlightedColorTransform.blueOffset = defaultOffset * 2;
+	
+		highlight(false);
+	}
+	
+	public function highlight(?yes:Bool = true)
+	{
+		trace("highlight", yes);
+		sprite.transform.colorTransform = yes ? highlightedColorTransform : defaultColorTransform;
 	}
 	
 	function createZone():Sprite
@@ -39,7 +73,8 @@ class CellView
 		
 		var graphics = sprite.graphics;
 		
-		graphics.beginFill(RndColor.green(0.5, 1));
+		trace(baseColor);
+		graphics.beginFill(baseColor);
 		var corners = center.corners.copy();
 		corners.sort(function(cornerA:Corner, cornerB:Corner)
 		{
@@ -82,7 +117,7 @@ class CellView
 	{
 		if (edge.v0 != null && edge.v1 != null)
 		{
-			graphics.lineStyle(2, 0x000000, 0.5);
+			graphics.lineStyle(2, 0x000000, 0.125);
 			graphics.moveTo(edge.v0.point.x, edge.v0.point.y);
 			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
 		}
