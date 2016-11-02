@@ -46,14 +46,17 @@ class Sample extends Sprite
 		map.islandShape = IslandShape.makeRadial(1);
 		map.islandShape = IslandShape.makeBlob();
 		map.islandShape = IslandShape.makeNoise(1);
-		map.islandShape = IslandShape.makePerlin(1);
+		map.islandShape = IslandShape.makePerlin(10);
 		map.go3AssignElevations();
 		
-		map.centers = map.centers.filter(function(center:Center)
+		
+		map.go4AssignMoisture(50);
+		
+		/*map.centers = map.centers.filter(function(center:Center)
 		{
 			//return true;
 			return center.getNeighbors().length == center.corners.length;
-		});
+		});*/
 		
 		/*map.centers = map.centers.filter(function(center:Center)
 		{
@@ -88,7 +91,7 @@ class Sample extends Sprite
 		cornerCanvas.name = "cornerCanvas";
 		
 		//zoneCanvas.alpha = edgeCanvas.alpha = 0.25;
-		//zoneCanvas.alpha = 0.1;
+		//zoneCanvas.alpha = 0.25;
 		
 		
 		/*var centerCanvas = drawPoints(map.centers.map(function(center)
@@ -106,7 +109,7 @@ class Sample extends Sprite
 		//addChild(edgeCanvas);
 		//addChild(centerCanvas);
 		//addChild(cornerCanvas);
-		
+		//zoneCanvas.mouseChildren = true;
 		//zoneCanvas.addEventListener(MouseEvent.ROLL_OVER, onMouseOverOut);
 		//zoneCanvas.addEventListener(MouseEvent.ROLL_OUT, onMouseOverOut);
 		
@@ -114,17 +117,25 @@ class Sample extends Sprite
 	
 	private function onMouseOverOut(e:MouseEvent):Void 
 	{
-		
 		var openflSprite = cast(e.target, openfl.display.Sprite);
 				
-		var name = "instance" + ((Std.parseInt(openflSprite.name.split("instance")[1])) - 1);
+		var name = "instance" + ((Std.parseInt(openflSprite.name.split("instance")[1]))/* - 1*/);
+		//trace(cast(e.target, Sprite).name, name);
+		//trace(cellViewBySpriteName);
 		
 		var cellView = cellViewBySpriteName.get(name);
 		
+		//trace(cellView);
+		
 		if (cellView == null)	return;
+		
+		var over = e.type == MouseEvent.ROLL_OVER || e.type == MouseEvent.MOUSE_OVER;
+		
+		cellView.highlight(over?0.25:0);
 		
 		var center = cellView.center;
 		//trace(name, cellViewBySpriteName.get(name), center.point);
+		
 		
 		for (neighbor in center.getNeighbors())
 		{
@@ -132,7 +143,7 @@ class Sample extends Sprite
 			//trace(neighborCellView, neighborCellView.center.point, neighborCellView.sprite);
 			if (neighborCellView != null)
 			{
-				neighborCellView.highlight(e.type == MouseEvent.ROLL_OVER || e.type == MouseEvent.MOUSE_OVER);
+				neighborCellView.highlight(over?0.125:0);
 			}
 		}
 	}
@@ -152,6 +163,8 @@ class Sample extends Sprite
 	function createCellViews(centers:Array<Center>):Sprite
 	{
 		var sprite = new Sprite();
+		sprite.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverOut);
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, onMouseOverOut);
 		for (center in centers)
 		{
 			var cellView = new CellView(center);
@@ -160,8 +173,8 @@ class Sample extends Sprite
 			cellViewByCenter.set(center, cellView);
 			cellViewBySpriteName.set(cellView.sprite.name, cellView);
 			
-			cellView.sprite.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverOut);
-			cellView.sprite.addEventListener(MouseEvent.MOUSE_OUT, onMouseOverOut);
+			//cellView.sprite.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverOut);
+			//cellView.sprite.addEventListener(MouseEvent.MOUSE_OUT, onMouseOverOut);
 		}
 		for (key in cellViewBySpriteName.keys())
 		{

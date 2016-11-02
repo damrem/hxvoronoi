@@ -714,7 +714,7 @@ class VoronoiMap {
       
 		for (i in 0...riverChance) {
 			q = corners[mapRandom.nextIntRange(0, corners.length-1)];
-			if (q.ocean || q.elevation < 0.3 || q.elevation > 0.9) continue;
+			if (q==null || q.ocean || q.elevation < 0.3 || q.elevation > 0.9) continue;
 			// Bias rivers to go west: if (q.downslope.x > q.x) continue;
 			while (!q.coast) {
 				if (q == q.downslope) {

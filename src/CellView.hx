@@ -27,6 +27,7 @@ class CellView
 	{
 		this.center = center;
 		sprite = new Sprite();
+		sprite.mouseChildren = false;
 		sprite.useHandCursor = sprite.buttonMode = true;
 		//sprite.scaleY = 3 / 4;
 		trace(sprite.name);
@@ -40,41 +41,42 @@ class CellView
 		//sprite.addChild(createBorders());
 		//sprite.addChild(createCorners());
 		
-		baseColor = !center.ocean 
+		baseColor = !center.water 
 		? RndColor.green(0.5, 1) + RndColor.red(0.25, 0.5) 
 		: 0x0080ff;
 		
 		trace(baseColor);
-		sprite.addChild(createZone());
+		sprite.addChild(createZone(baseColor));
+		sprite.addChild(createZone(0x0080ff, center.moisture/2));
 		//sprite.addChild(createCenter());
 		
 		//var bc = new ARGB();
 		//bc.
 		
-		var defaultOffset = Math.round((center.elevation - 0.25) * 256);
-		trace(defaultOffset);
+		//var defaultOffset = Math.round((center.elevation - 0.25) * 256);
+		//trace(defaultOffset);
 		//defaultOffset = 0;
-		defaultColorTransform = new ColorTransform(1, 1, 1, 1, defaultOffset, defaultOffset, defaultOffset);
-		highlightedColorTransform = defaultColorTransform.clone();
-		highlightedColorTransform.redOffset = highlightedColorTransform.greenOffset = highlightedColorTransform.blueOffset = defaultOffset * 2;
+		//defaultColorTransform = new ColorTransform();
+		//highlightedColorTransform = defaultColorTransform.clone();
+		//highlightedColorTransform.redOffset = highlightedColorTransform.greenOffset = highlightedColorTransform.blueOffset = defaultOffset * 2;
 	
-		highlight(false);
 	}
 	
-	public function highlight(?yes:Bool = true)
+	public function highlight(lightness:Float = 0)
 	{
-		trace("highlight", yes);
-		sprite.transform.colorTransform = yes ? highlightedColorTransform : defaultColorTransform;
+		var o = lightness * 256;
+		sprite.transform.colorTransform = new ColorTransform(1,1,1,1,o,o,o);
+		trace(center.border, center.coast, center.moisture, center.biome);
 	}
 	
-	function createZone():Sprite
+	function createZone(color:Int, alpha:Float=1):Sprite
 	{
 		var sprite = new Sprite();
 		
 		var graphics = sprite.graphics;
 		
 		trace(baseColor);
-		graphics.beginFill(baseColor);
+		graphics.beginFill(color, alpha);
 		var corners = center.corners.copy();
 		corners.sort(function(cornerA:Corner, cornerB:Corner)
 		{
