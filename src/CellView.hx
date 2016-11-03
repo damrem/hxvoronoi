@@ -1,10 +1,9 @@
 package;
-import hxlpers.colors.RndColor;
-import lime.math.color.ARGB;
 import lime.math.Vector2;
 import openfl.display.Graphics;
 import openfl.display.Sprite;
 import openfl.geom.ColorTransform;
+import openfl.geom.Vector3D;
 import voronoimap.Biome;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
@@ -70,6 +69,7 @@ class CellView
 		
 		trace(baseColor);
 		sprite.addChild(createZone(baseColor));
+		sprite.addChild(createSlopes(/*0.25*/));
 		sprite.addChild(createZone(0x0080ff, center.moisture/2));
 		//sprite.addChild(createCenter());
 		
@@ -114,6 +114,44 @@ class CellView
 			graphics.lineTo(corner.point.x, corner.point.y);
 		}
 		graphics.endFill();
+		
+		return sprite;
+	}
+	private static var lightVector:Vector3D = new Vector3D(-1, -1, 0);
+	public static function calculateLighting(p:Center<CellView>, r:Corner<CellView>, s:Corner<CellView>):Float {
+		var A:Vector3D = new Vector3D(p.point.x, p.point.y, p.elevation);
+		var B:Vector3D = new Vector3D(r.point.x, r.point.y, r.elevation);
+		var C:Vector3D = new Vector3D(s.point.x, s.point.y, s.elevation);
+		var normal:Vector3D = B.subtract(A).crossProduct(C.subtract(A));
+		if (normal.z < 0) { normal.scaleBy( -1); }
+		normal.normalize();
+		var light:Float = 0.5 + 35*normal.dotProduct(lightVector);
+		if (light < 0) light = 0;
+		if (light > 1) light = 1;
+		return light;
+    }
+	
+	function createSlopes(alpha:Float=1):Sprite
+	{
+		var sprite = new Sprite();
+		var graphics = sprite.graphics;
+		
+		for (edge in center.borders)
+		{
+			if (edge.v0 == null || edge.v1 == null) continue;
+			
+			var light = calculateLighting(center, edge.v0, edge.v1);
+			var lightColor = light < 0.5?0x000000:0xffffff;
+			var lightAlpha = Math.abs(light - 0.5);
+			
+			graphics.beginFill(lightColor, lightAlpha*alpha);
+			graphics.moveTo(center.point.x, center.point.y);
+			graphics.lineTo(edge.v0.point.x, edge.v0.point.y);
+			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
+			//graphics.lineTo(center.point.x, center.point.y);
+			graphics.endFill();
+		}
+			
 		
 		return sprite;
 	}
