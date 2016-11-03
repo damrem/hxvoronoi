@@ -29,13 +29,6 @@ class Sample extends Sprite
 	{
 		super();
 		
-		var poly = new Polygon();
-		poly.push(new Point(1, 0));
-		poly.push(new Point(0, 1));
-		poly.push(new Point(1, 1));
-		trace(poly.getCentroid());
-		
-		//cellViewByCenter = new Map<Center, CellView>();
 		cellViewBySpriteName = new Map<String, CellView>();
 		
 		var stg = Lib.current.stage;
@@ -59,6 +52,7 @@ class Sample extends Sprite
 		
 		
 		map.go4AssignMoisture(50);
+		map.go5DecorateMap();
 		
 		/*map.centers = map.centers.filter(function(center:Center)
 		{
@@ -141,7 +135,7 @@ class Sample extends Sprite
 		
 		for (neighbor in center.getNeighbors())
 		{
-			var neighborCellView = neighbor.data;// cellViewByCenter.get(neighbor);
+			var neighborCellView = neighbor.data;
 			if (neighborCellView != null)
 			{
 				neighborCellView.highlight(over?0.125:0);
@@ -171,16 +165,8 @@ class Sample extends Sprite
 			var cellView = new CellView(center);
 			sprite.addChild(cellView.sprite);
 			
-			//cellViewByCenter.set(center, cellView);
 			center.data = cellView;
 			cellViewBySpriteName.set(cellView.sprite.name, cellView);
-			
-			//cellView.sprite.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverOut);
-			//cellView.sprite.addEventListener(MouseEvent.MOUSE_OUT, onMouseOverOut);
-		}
-		for (key in cellViewBySpriteName.keys())
-		{
-			trace(key, cellViewBySpriteName.get(key));
 		}
 		return sprite;
 	}

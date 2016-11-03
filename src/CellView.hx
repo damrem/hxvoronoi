@@ -5,6 +5,7 @@ import lime.math.Vector2;
 import openfl.display.Graphics;
 import openfl.display.Sprite;
 import openfl.geom.ColorTransform;
+import voronoimap.Biome;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
 import voronoimap.graph.Edge;
@@ -25,6 +26,28 @@ class CellView
 
 	public function new(center:Center<CellView>) 
 	{
+		
+		var colorByBiome:Map<Biome, Int> = [
+			OCEAN => 0x0080ff,
+			MARSH => 0x808000,
+			ICE => 0xeeeeff,
+			LAKE => 0x0040ff,
+			BEACH => 0xffff80,
+			SNOW => 0xffffff,
+			TUNDRA => 0xeeffee,
+			BARE => 0x808080,
+			SCORCHED => 0xff8000,
+			TAIGA => 0xffeeee,
+			SHRUBLAND => 0x80ff00,
+			TEMPERATE_DESERT => 0xeeff00,
+			TEMPERATE_RAIN_FOREST => 0x00ff40,
+			TEMPERATE_DECIDUOUS_FOREST => 0x00ff80,
+			GRASSLAND => 0x40ff80,
+			TROPICAL_RAIN_FOREST => 0x00ff40,
+			TROPICAL_SEASONAL_FOREST => 0x00ff80,
+			SUBTROPICAL_DESERT => 0xffee00
+		];
+		
 		this.center = center;
 		sprite = new Sprite();
 		sprite.mouseChildren = false;
@@ -37,13 +60,13 @@ class CellView
 		//sprite.name = "cellView" + uid++;// center.point.x + ',' + center.point.y;
 		//sprite.mouseChildren = false;
 		
-		this.baseColor = 0x00ff00;
+		this.baseColor = colorByBiome[center.biome];
 		//sprite.addChild(createBorders());
 		//sprite.addChild(createCorners());
 		
-		baseColor = !center.water 
-		? RndColor.green(0.5, 1) + RndColor.red(0.25, 0.5) 
-		: 0x0080ff;
+		//baseColor = !center.water 
+		//? RndColor.green(0.5, 1) + RndColor.red(0.25, 0.5) 
+		//: 0x0080ff;
 		
 		trace(baseColor);
 		sprite.addChild(createZone(baseColor));

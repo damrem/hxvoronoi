@@ -111,7 +111,7 @@ class VoronoiMap<T> {
 		// Determine polygon and corner type: ocean, coast, land.
 		assignOceanCoastAndLand(lakeThreshold);
 		
-		// Rescale elevations so that the highest is 1.0, and they're
+		// Rescale elevations so that the highest is 1.0, and theyre
 		// distributed well. We want lower elevations to be more common
 		// than higher elevations, in proportions approximately matching
 		// concentric rings. That is, the lowest elevation is the
@@ -201,7 +201,7 @@ class VoronoiMap<T> {
 	/**
 	 * Generate random points and assign them to be on the island or
 	 * in the water. Some water points are inland lakes; others are
-	 * ocean. We'll determine ocean later by looking at what's
+	 * ocean. Well determine ocean later by looking at whats
 	 * connected to ocean.
 	 */
     public function generateRandomPoints( NUM_POINTS : Int ) : Array<Point> {
@@ -218,15 +218,15 @@ class VoronoiMap<T> {
      * Improve the random set of points with Lloyd Relaxation.
      */
     public function improveRandomPoints( points : Array<Point>, numLloydIterations : Int ) : Void {
-      // We'd really like to generate "blue noise". Algorithms:
+      // Wed really like to generate "blue noise". Algorithms:
       // 1. Poisson dart throwing: check each new point against all
-      //     existing points, and reject it if it's too close.
+      //     existing points, and reject it if its too close.
       // 2. Start with a hexagonal grid and randomly perturb points.
       // 3. Lloyd Relaxation: move each point to the centroid of the
       //     generated Voronoi polygon, then generate Voronoi again.
       // 4. Use force-based layout algorithms to push points away.
       // 5. More at http://www.cs.virginia.edu/~gfx/pubs/antimony/
-      // Option 3 is implemented here. If it's run for too many iterations,
+      // Option 3 is implemented here. If its run for too many iterations,
       // it will turn into a grid, but convergence is very slow, and we only
       // run it a few times.
 		var i:Int, p:Point, q:Point, voronoi:Voronoi, region:Array<Point>;
@@ -250,7 +250,7 @@ class VoronoiMap<T> {
 
 	/**
 	 * Although Lloyd relaxation improves the uniformity of polygon
-	 * sizes, it doesn't help with the edge lengths. Short edges can
+	 * sizes, it doesnt help with the edge lengths. Short edges can
 	 * be bad for some games, and lead to weird artifacts on
 	 * rivers. We can easily lengthen short edges by moving the
 	 * corners, but **we lose the Voronoi property**.  The corners are
@@ -309,7 +309,7 @@ class VoronoiMap<T> {
 	}
 
 	/**
-	 * Build graph data structure in 'edges', 'centers', 'corners',
+	 * Build graph data structure in edges, centers, corners,
 	 * based on information in the Voronoi results: point.neighbors
 	 * will be a list of neighboring points of the same type (corner
 	 * or center); point.edges will be a list of edges that include
@@ -346,7 +346,7 @@ class VoronoiMap<T> {
       // corners, and we need to canonicalize to one Corner object.
       // To make lookup fast, we keep an array of Points, bucketed by
       // x value, and then we only have to look at other Points in
-      // nearby buckets. When we fail to find one, we'll create a new
+      // nearby buckets. When we fail to find one, well create a new
       // Corner object.
       var _cornerMap:Array<Array<Corner<T>>> = [];
       function makeCorner(point:Point):Corner<T> {
@@ -452,7 +452,7 @@ class VoronoiMap<T> {
 	 * construction algorithm. Also by construction, inlets/bays
 	 * push low elevation areas inland, which means many rivers end
 	 * up flowing out through them. Also by construction, lakes
-	 * often end up on river paths because they don't raise the
+	 * often end up on river paths because they dont raise the
 	 * elevation as much as other terrain does.
 	 */
     public function assignCornerElevations():Void {
@@ -481,13 +481,13 @@ class VoronoiMap<T> {
 
         for (s in q.adjacent) {
             // Every step up is epsilon over water or 1 over land. The
-            // number doesn't matter because we'll rescale the
+            // number doesnt matter because well rescale the
             // elevations later.
             var newElevation:Float = 0.01 + q.elevation;
             if (!q.water && !s.water) {
               newElevation += 1;
             }
-            // If this point changed, we'll add it to the queue so
+            // If this point changed, well add it to the queue so
             // that we can process its neighbors too.
             if (newElevation < s.elevation) {
               s.elevation = newElevation;
@@ -511,7 +511,7 @@ class VoronoiMap<T> {
       var i:Int, y:Float, x:Float;
 
 	  //Haxe port
-      //locations.sortOn('elevation', Array.NUMERIC);
+      //locations.sortOn(elevation, Array.NUMERIC);
 	  locations.sort(function(c1, c2) {
 		  if (c1.elevation > c2.elevation) return 1;
 		  if (c1.elevation < c2.elevation) return -1;
@@ -560,7 +560,7 @@ class VoronoiMap<T> {
      * Determine polygon and corner types: ocean, coast, land.
      */
     public function assignOceanCoastAndLand( lakeThreshold : Float ):Void {
-      // Compute polygon attributes 'ocean' and 'water' based on the
+      // Compute polygon attributes ocean and water based on the
       // corner attributes. Count the water corners per
       // polygon. Oceans are all polygons connected to the edge of the
       // map. In the first pass, mark the edges of the map as ocean;
@@ -594,7 +594,7 @@ class VoronoiMap<T> {
           }
       }
       
-      // Set the polygon attribute 'coast' based on its neighbors. If
+      // Set the polygon attribute coast based on its neighbors. If
       // it has at least one ocean and at least one land neighbor,
       // then this is a coastal polygon.
       for (p in centers) {
@@ -610,8 +610,8 @@ class VoronoiMap<T> {
 
       // Set the corner attributes based on the computed polygon
       // attributes. If all polygons connected to this corner are
-      // ocean, then it's ocean; if all are land, then it's land;
-      // otherwise it's coast.
+      // ocean, then its ocean; if all are land, then its land;
+      // otherwise its coast.
       for (q in corners) {
           var numOcean:Int = 0;
           var numLand:Int = 0;
@@ -661,7 +661,7 @@ class VoronoiMap<T> {
 	/**
 	 * Calculate the watershed of every land point. The watershed is
 	 * the last downstream land point in the downslope graph. TODO:
-	 * watersheds are currently calculated on corners, but it'd be
+	 * watersheds are currently calculated on corners, but itd be
 	 * more useful to compute them on polygon centers so that every
 	 * polygon can be marked as being in one watershed.
 	 */
@@ -789,39 +789,39 @@ class VoronoiMap<T> {
 
 	/**
 	 * Assign a biome type to each polygon. If it has
-	 * ocean/coast/water, then that's the biome; otherwise it depends
+	 * ocean/coast/water, then thats the biome; otherwise it depends
 	 * on low/high elevation and low/medium/high moisture. This is
 	 * roughly based on the Whittaker diagram but adapted to fit the
 	 * needs of the island map generator.
 	 */
-    static public function getBiome<T>(p:Center<T>):String {
+    static public function getBiome<T>(p:Center<T>):Biome {
       if (p.ocean) {
-        return 'OCEAN';
+        return OCEAN;
       } else if (p.water) {
-        if (p.elevation < 0.1) return 'MARSH';
-        if (p.elevation > 0.8) return 'ICE';
-        return 'LAKE';
+        if (p.elevation < 0.1) return MARSH;
+        if (p.elevation > 0.8) return ICE;
+        return LAKE;
       } else if (p.coast) {
-        return 'BEACH';
+        return BEACH;
       } else if (p.elevation > 0.8) {
-        if (p.moisture > 0.50) return 'SNOW';
-        else if (p.moisture > 0.33) return 'TUNDRA';
-        else if (p.moisture > 0.16) return 'BARE';
-        else return 'SCORCHED';
+        if (p.moisture > 0.50) return SNOW;
+        else if (p.moisture > 0.33) return TUNDRA;
+        else if (p.moisture > 0.16) return BARE;
+        else return SCORCHED;
       } else if (p.elevation > 0.6) {
-        if (p.moisture > 0.66) return 'TAIGA';
-        else if (p.moisture > 0.33) return 'SHRUBLAND';
-        else return 'TEMPERATE_DESERT';
+        if (p.moisture > 0.66) return TAIGA;
+        else if (p.moisture > 0.33) return SHRUBLAND;
+        else return TEMPERATE_DESERT;
       } else if (p.elevation > 0.3) {
-        if (p.moisture > 0.83) return 'TEMPERATE_RAIN_FOREST';
-        else if (p.moisture > 0.50) return 'TEMPERATE_DECIDUOUS_FOREST';
-        else if (p.moisture > 0.16) return 'GRASSLAND';
-        else return 'TEMPERATE_DESERT';
+        if (p.moisture > 0.83) return TEMPERATE_RAIN_FOREST;
+        else if (p.moisture > 0.50) return TEMPERATE_DECIDUOUS_FOREST;
+        else if (p.moisture > 0.16) return GRASSLAND;
+        else return TEMPERATE_DESERT;
       } else {
-        if (p.moisture > 0.66) return 'TROPICAL_RAIN_FOREST';
-        else if (p.moisture > 0.33) return 'TROPICAL_SEASONAL_FOREST';
-        else if (p.moisture > 0.16) return 'GRASSLAND';
-        else return 'SUBTROPICAL_DESERT';
+        if (p.moisture > 0.66) return TROPICAL_RAIN_FOREST;
+        else if (p.moisture > 0.33) return TROPICAL_SEASONAL_FOREST;
+        else if (p.moisture > 0.16) return GRASSLAND;
+        else return SUBTROPICAL_DESERT;
       }
     }
 	
