@@ -1,5 +1,6 @@
 package;
 
+import hxlpers.geom.Polygon;
 import openfl.display.Graphics;
 import openfl.display.Shape;
 import openfl.display.Sprite;
@@ -13,6 +14,7 @@ import voronoimap.IslandShape;
 import voronoimap.VoronoiMap;
 using hxlpers.lime.math.Vector2Extender;
 using CenterExtender;
+using hxlpers.geom.PolygonExtender;
 /**
  * ...
  * @author damrem
@@ -20,14 +22,20 @@ using CenterExtender;
 class Sample extends Sprite
 {
 
-	var cellViewByCenter:Map<Center, CellView>;
+	//var cellViewByCenter:Map<Center, CellView>;
 	var cellViewBySpriteName:Map<String, CellView>;
 	
 	public function new() 
 	{
 		super();
 		
-		cellViewByCenter = new Map<Center, CellView>();
+		var poly = new Polygon();
+		poly.push(new Point(1, 0));
+		poly.push(new Point(0, 1));
+		poly.push(new Point(1, 1));
+		trace(poly.getCentroid());
+		
+		//cellViewByCenter = new Map<Center, CellView>();
 		cellViewBySpriteName = new Map<String, CellView>();
 		
 		var stg = Lib.current.stage;
@@ -120,12 +128,8 @@ class Sample extends Sprite
 		var openflSprite = cast(e.target, openfl.display.Sprite);
 				
 		var name = "instance" + ((Std.parseInt(openflSprite.name.split("instance")[1]))/* - 1*/);
-		//trace(cast(e.target, Sprite).name, name);
-		//trace(cellViewBySpriteName);
 		
 		var cellView = cellViewBySpriteName.get(name);
-		
-		//trace(cellView);
 		
 		if (cellView == null)	return;
 		
@@ -134,13 +138,10 @@ class Sample extends Sprite
 		cellView.highlight(over?0.25:0);
 		
 		var center = cellView.center;
-		//trace(name, cellViewBySpriteName.get(name), center.point);
-		
 		
 		for (neighbor in center.getNeighbors())
 		{
-			var neighborCellView = cellViewByCenter.get(neighbor);
-			//trace(neighborCellView, neighborCellView.center.point, neighborCellView.sprite);
+			var neighborCellView = neighbor.data;// cellViewByCenter.get(neighbor);
 			if (neighborCellView != null)
 			{
 				neighborCellView.highlight(over?0.125:0);
@@ -160,7 +161,7 @@ class Sample extends Sprite
 		return canvas;
 	}
 	
-	function createCellViews(centers:Array<Center>):Sprite
+	function createCellViews(centers:Array<Center<CellView>>):Sprite
 	{
 		var sprite = new Sprite();
 		sprite.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverOut);
@@ -170,7 +171,8 @@ class Sample extends Sprite
 			var cellView = new CellView(center);
 			sprite.addChild(cellView.sprite);
 			
-			cellViewByCenter.set(center, cellView);
+			//cellViewByCenter.set(center, cellView);
+			center.data = cellView;
 			cellViewBySpriteName.set(cellView.sprite.name, cellView);
 			
 			//cellView.sprite.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverOut);
@@ -183,7 +185,7 @@ class Sample extends Sprite
 		return sprite;
 	}
 	
-	function createEdgeViews(edges:Array<Edge>):Sprite
+	function createEdgeViews(edges:Array<Edge<CellView>>):Sprite
 	{
 		var sprite = new Sprite();
 		for (edge in edges)
@@ -193,7 +195,7 @@ class Sample extends Sprite
 		return sprite;
 	}
 	
-	function createEdge(edge:Edge, graphics:Graphics)
+	function createEdge(edge:Edge<CellView>, graphics:Graphics)
 	{
 		if (edge.v0 != null && edge.v1 != null)
 		{
@@ -204,7 +206,7 @@ class Sample extends Sprite
 	}
 	
 	
-	function createCorners(corners:Array<Corner>):Sprite
+	function createCorners(corners:Array<Corner<CellView>>):Sprite
 	{
 		var sprite = new Sprite();
 		for (corner in corners)
@@ -214,7 +216,7 @@ class Sample extends Sprite
 		return sprite;
 	}
 	
-	function drawCorner(corner:Corner, graphics:Graphics) 
+	function drawCorner(corner:Corner<CellView>, graphics:Graphics) 
 	{
 		graphics.beginFill(0xffffff);
 		graphics.drawCircle(corner.point.x, corner.point.y, 1);

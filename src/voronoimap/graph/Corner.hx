@@ -1,7 +1,7 @@
 package voronoimap.graph;
 import openfl.geom.Point;
 
-class Corner {
+class Corner<T> {
 	public function new() { }
 	
     public var index:Int;
@@ -14,12 +14,12 @@ class Corner {
     public var elevation:Float;  // 0.0-1.0
     public var moisture:Float;  // 0.0-1.0
 
-    public var touches:Array<Center>;
-    public var protrudes:Array<Edge>;
-    public var adjacent:Array<Corner>;
+    public var touches:Array<Center<T>>;
+    public var protrudes:Array<Edge<T>>;
+    public var adjacent:Array<Corner<T>>;
   
     public var river:Int;  // 0 if no river, or volume of water in river
-    public var downslope:Corner;  // pointer to adjacent corner most downhill
-    public var watershed:Corner;  // pointer to coastal corner, or null
+    public var downslope:Corner<T>;  // pointer to adjacent corner most downhill
+    public var watershed:Corner<T>;  // pointer to coastal corner, or null
     public var watershed_size:Int;
 }

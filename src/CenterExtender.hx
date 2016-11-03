@@ -9,11 +9,11 @@ import voronoimap.graph.Corner;
 class CenterExtender
 {
 
-	static public function getNeighbors(centerA:Center):Array<Center>
+	static public function getNeighbors<T>(centerA:Center<T>):Array<Center<T>>
 	{
-		return centerA.neighbors.filter(function(centerB:Center):Bool
+		return centerA.neighbors.filter(function(centerB:Center<T>):Bool
 		{
-			return centerA.corners.filter(function(cornerA:Corner)
+			return centerA.corners.filter(function(cornerA:Corner<T>)
 			{
 				return centerB.corners.indexOf(cornerA) >= 0;
 			})

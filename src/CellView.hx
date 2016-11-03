@@ -16,14 +16,14 @@ using hxlpers.openfl.geom.ColorTransformExtender;
  */
 class CellView
 {
-	public var center(default, null):Center;
+	public var center(default, null):Center<CellView>;
 	public var sprite:Sprite;
 	static var uid:UInt = 0;
 	var defaultColorTransform:ColorTransform;
 	var highlightedColorTransform:ColorTransform;
 	var baseColor:UInt;
 
-	public function new(center:Center) 
+	public function new(center:Center<CellView>) 
 	{
 		this.center = center;
 		sprite = new Sprite();
@@ -78,7 +78,7 @@ class CellView
 		trace(baseColor);
 		graphics.beginFill(color, alpha);
 		var corners = center.corners.copy();
-		corners.sort(function(cornerA:Corner, cornerB:Corner)
+		corners.sort(function(cornerA:Corner<CellView>, cornerB:Corner<CellView>)
 		{
 			var va = new Vector2(cornerA.point.x - center.point.x, cornerA.point.y - center.point.y);
 			var vb = new Vector2(cornerB.point.x - center.point.x, cornerB.point.y - center.point.y);
@@ -115,7 +115,7 @@ class CellView
 		return sprite;
 	}
 	
-	function drawBorder(edge:Edge, graphics:Graphics)
+	function drawBorder(edge:Edge<CellView>, graphics:Graphics)
 	{
 		if (edge.v0 != null && edge.v1 != null)
 		{
