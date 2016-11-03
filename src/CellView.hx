@@ -22,9 +22,11 @@ class CellView
 	var defaultColorTransform:ColorTransform;
 	var highlightedColorTransform:ColorTransform;
 	var baseColor:UInt;
+	var lightVector:Vector3D;
 
-	public function new(center:Center<CellView>) 
+	public function new(center:Center<CellView>, lightVector:Vector3D) 
 	{
+		this.lightVector = lightVector;
 		
 		var colorByBiome:Map<Biome, Int> = [
 			OCEAN => 0x0080ff,
@@ -117,8 +119,8 @@ class CellView
 		
 		return sprite;
 	}
-	private static var lightVector:Vector3D = new Vector3D(-1, -1, 0);
-	public static function calculateLighting(p:Center<CellView>, r:Corner<CellView>, s:Corner<CellView>):Float {
+	//private static var lightVector:Vector3D = new Vector3D(-1, -1, 0);
+	function calculateLighting(p:Center<CellView>, r:Corner<CellView>, s:Corner<CellView>):Float {
 		var A:Vector3D = new Vector3D(p.point.x, p.point.y, p.elevation);
 		var B:Vector3D = new Vector3D(r.point.x, r.point.y, r.elevation);
 		var C:Vector3D = new Vector3D(s.point.x, s.point.y, s.elevation);

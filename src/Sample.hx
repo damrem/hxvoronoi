@@ -6,6 +6,7 @@ import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.events.MouseEvent;
 import openfl.geom.Point;
+import openfl.geom.Vector3D;
 import openfl.Lib;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
@@ -24,6 +25,7 @@ class Sample extends Sprite
 
 	//var cellViewByCenter:Map<Center, CellView>;
 	var cellViewBySpriteName:Map<String, CellView>;
+	var lightVector:Vector3D = new Vector3D(-1, -1, 0);
 	
 	public function new() 
 	{
@@ -162,7 +164,7 @@ class Sample extends Sprite
 		sprite.addEventListener(MouseEvent.MOUSE_OUT, onMouseOverOut);
 		for (center in centers)
 		{
-			var cellView = new CellView(center);
+			var cellView = new CellView(center, lightVector);
 			sprite.addChild(cellView.sprite);
 			
 			center.data = cellView;
