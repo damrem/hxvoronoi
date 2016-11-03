@@ -17,9 +17,10 @@
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
 	<haxelib name="polygonal-ds" />
+	<haxelib name="random" />
+	<haxelib name="thx.color" />
 	<!--<haxelib name="janicek-core-haxe" />-->
 
-	
 	<!-- assets -->
 	<icon path="assets/openfl.svg" />
 	<assets path="assets/img" rename="img" />

@@ -80,7 +80,6 @@ class Voronoi {
 	private function makeSureNoDuplicatePoints(points:Array<Point>) {
 		var h = new Map<String, Point>();
 		for (p in points) {
-			trace(p.toString());
 			if (h.exists(p.toString())) {
 				throw "Duplicate points not supported yet!";
 			}
