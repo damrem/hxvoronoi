@@ -14,6 +14,7 @@ using Lambda;
 using com.nodename.delaunay.BoolExtender;
 
 class VoronoiMap<T> {
+	var elevationFactor:Float;
 
 	public static inline var DEFAULT_LAKE_THRESHOLD = 0.3;
 	public static inline var DEFAULT_LLOYD_ITERATIONS = 2;
@@ -49,13 +50,16 @@ class VoronoiMap<T> {
     public var centers:Array<Center<T>>;
     public var corners:Array<Corner<T>>;
     public var edges:Array<Edge<T>>;
+	static public inline var DEFAULT_ELEVATION_FACTOR:Float = 50;
 
 	/**
 	 * Make a new map.
 	 * @param	size width and height of map
 	 * @param	riverChance 0 = no rivers, > 0 = more rivers, default = map area / 4
 	 */
-	public function new( size : Size) {
+	public function new( size : Size, elevationFactor:Float = DEFAULT_ELEVATION_FACTOR)
+	{
+		this.elevationFactor = elevationFactor;
 		mapRandom = new PM_PRNG();
 		SIZE = size;
 		reset();
@@ -326,7 +330,7 @@ class VoronoiMap<T> {
       // Build Center objects for each of the points, and a lookup map
       // to find those Center objects again as we build the graph
       for (point in points) {
-          p = new Center<T>();
+          p = new Center<T>(elevationFactor);
           p.index = centers.length;
           p.point = point;
           p.neighbors = new  Array<Center<T>>();
@@ -367,7 +371,7 @@ class VoronoiMap<T> {
         }
         bucket = Std.int(point.x);
         if (_cornerMap[bucket] == null) _cornerMap[bucket] = [];
-        q = new Corner<T>();
+        q = new Corner<T>(elevationFactor);
         q.index = corners.length;
         corners.push(q);
         q.point = point;

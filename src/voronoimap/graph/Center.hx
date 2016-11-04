@@ -10,7 +10,7 @@ class Center<T> extends AbstractGraphPoint
     public var borders:Array<Edge<T>>;
     public var corners:Array<Corner<T>>;
 	
-	public function new() {
-		
+	public function new(elevationFactor:Float) {
+		super(elevationFactor);
 	}
 }

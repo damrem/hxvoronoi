@@ -24,6 +24,7 @@ class Sample extends Sprite
 {
 
 	//var cellViewByCenter:Map<Center, CellView>;
+	public static inline var ELEVATION_FACTOR:Float = 100;
 	var cellViewBySpriteName:Map<String, CellView>;
 	var lightVector:Vector3D = new Vector3D(-1, -1, 0);
 	

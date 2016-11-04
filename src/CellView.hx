@@ -18,12 +18,11 @@ class CellView
 {
 	public var center(default, null):Center<CellView>;
 	public var sprite:Sprite;
-	public static inline var ELEVATION_FACTOR:Float = 100;
+	
 	static var uid:UInt = 0;
 	var defaultColorTransform:ColorTransform;
 	var highlightedColorTransform:ColorTransform;
 	var baseColor:UInt;
-	//var lightVector:Vector3D;
 	var slopes:Array<Slope>;
 
 	public function new(center:Center<CellView>) 
@@ -124,11 +123,6 @@ class CellView
 		return sprite;
 	}
 	
-	function elevate(y:Float):Float
-	{
-		return y * ELEVATION_FACTOR;
-	}
-
 	function createSlopes(alpha:Float=1):Sprite
 	{
 		var sprite = new Sprite();
