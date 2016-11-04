@@ -64,8 +64,9 @@ class CellView
 		trace(baseColor);
 		sprite.addChild(createZone(baseColor));
 		if (center.biome != Biome.LAKE)	sprite.addChild(createSlopes(/*0.25*/));
-		sprite.addChild(createZone(0x0080ff, center.moisture/2));
-		//sprite.addChild(createCenter());
+		sprite.addChild(createZone(0x0080ff, center.moisture / 2));
+		
+		if(!center.water)	sprite.addChild(createCenter(0.25));
 		
 		
 	
@@ -131,11 +132,11 @@ class CellView
 	
 	
 	
-	function createCenter():Sprite
+	function createCenter(alpha:Float=1):Sprite
 	{
 		var sprite = new Sprite();
 		var graphics = sprite.graphics;
-		graphics.beginFill(0xffffff);
+		graphics.beginFill(0xffffff, alpha);
 		graphics.drawCircle(center.elevatedPoint.x, center.elevatedPoint.y, 1);
 		graphics.endFill();
 		return sprite;

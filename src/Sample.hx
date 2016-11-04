@@ -83,7 +83,7 @@ class Sample extends Sprite
 		stg.stageHeight / stg.stageWidth;
 
 		addChild(zoneCanvas);
-		//addChild(edgeCanvas);
+		addChild(edgeCanvas);
 		//addChild(centerCanvas);
 		//addChild(cornerCanvas);
 		//zoneCanvas.mouseChildren = true;
@@ -176,11 +176,15 @@ class Sample extends Sprite
 	
 	function createEdge(edge:Edge<CellView>, graphics:Graphics)
 	{
-		if (edge.v0 != null && edge.v1 != null)
+		if (edge.v0 != null && edge.v1 != null && !edge.v0.water && !edge.v1.water)
 		{
-			graphics.lineStyle(2, 0xff0000);
-			graphics.moveTo(edge.v0.point.x, edge.v0.point.y);
-			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
+			var isRiver = edge.river >= 1;
+			var edgeThickness = isRiver ? 2 : 1;
+			var edgeColor = isRiver ? 0x0080ff : 0xffffff;
+			var edgeAlpha = isRiver ? 1 : 0.25;
+			graphics.lineStyle(edgeThickness, edgeColor, edgeAlpha);
+			graphics.moveTo(edge.v0.elevatedPoint.x, edge.v0.elevatedPoint.y);
+			graphics.lineTo(edge.v1.elevatedPoint.x, edge.v1.elevatedPoint.y);
 		}
 	}
 	
