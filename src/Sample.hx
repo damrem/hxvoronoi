@@ -118,13 +118,16 @@ class Sample extends Sprite
 		//zoneCanvas.addEventListener(MouseEvent.ROLL_OVER, onMouseOverOut);
 		//zoneCanvas.addEventListener(MouseEvent.ROLL_OUT, onMouseOverOut);
 		zoneCanvas.addEventListener(MouseEvent.MOUSE_MOVE, updateLight);
+		updateLight();
 		
 	}
 	
-	private function updateLight(e:MouseEvent):Void 
+	private function updateLight(?e:MouseEvent):Void 
 	{
-		lightVector.x = e.stageX - Lib.current.stage.stageWidth / 2;
-		lightVector.y = e.stageY - Lib.current.stage.stageHeight / 2;
+		
+		
+		lightVector.x = e != null ? e.stageX - Lib.current.stage.stageWidth / 2 : 1;
+		lightVector.y = e != null ? e.stageY - Lib.current.stage.stageHeight / 2 : 1;
 		
 		//var lightVector = new Vector3D(e.localX, e.localY, 0);
 		lightVector.normalize();
