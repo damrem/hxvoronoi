@@ -21,9 +21,9 @@ class Slope extends Sprite
 		this.edge = edge;
 		this.center = center;
 		graphics.beginFill(0x808080);
-		graphics.moveTo(center.point.x, center.point.y);
-		graphics.lineTo(edge.v0.point.x, edge.v0.point.y);
-		graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
+		graphics.moveTo(center.elevatedPoint.x, center.elevatedPoint.y);
+		graphics.lineTo(edge.v0.elevatedPoint.x, edge.v0.elevatedPoint.y);
+		graphics.lineTo(edge.v1.elevatedPoint.x, edge.v1.elevatedPoint.y);
 		graphics.endFill();
 	}
 	

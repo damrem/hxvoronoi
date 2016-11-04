@@ -18,6 +18,7 @@ class CellView
 {
 	public var center(default, null):Center<CellView>;
 	public var sprite:Sprite;
+	public static inline var ELEVATION_FACTOR:Float = 100;
 	static var uid:UInt = 0;
 	var defaultColorTransform:ColorTransform;
 	var highlightedColorTransform:ColorTransform;
@@ -92,7 +93,7 @@ class CellView
 	{
 		var o = lightness * 256;
 		sprite.transform.colorTransform = new ColorTransform(1,1,1,1,o,o,o);
-		trace(center.border, center.coast, center.moisture, center.biome);
+		//trace(center.border, center.coast, center.moisture, center.biome);
 	}
 	
 	function createZone(color:Int, alpha:Float=1):Sprite
@@ -101,7 +102,7 @@ class CellView
 		
 		var graphics = sprite.graphics;
 		
-		trace(baseColor);
+		//trace(baseColor);
 		graphics.beginFill(color, alpha);
 		var corners = center.corners.copy();
 		corners.sort(function(cornerA:Corner<CellView>, cornerB:Corner<CellView>)
@@ -111,14 +112,19 @@ class CellView
 			return Std.int(va.getAngle()*100 - vb.getAngle()*100);
 		});
 		var lastCorner = corners[corners.length - 1];
-		graphics.moveTo(lastCorner.point.x, lastCorner.point.y);
+		graphics.moveTo(lastCorner.elevatedPoint.x, lastCorner.elevatedPoint.y);
 		for (corner in corners)
 		{
-			graphics.lineTo(corner.point.x, corner.point.y);
+			graphics.lineTo(corner.elevatedPoint.x, corner.elevatedPoint.y);
 		}
 		graphics.endFill();
 		
 		return sprite;
+	}
+	
+	function elevate(y:Float):Float
+	{
+		return y * ELEVATION_FACTOR;
 	}
 
 	function createSlopes(alpha:Float=1):Sprite
@@ -155,7 +161,7 @@ class CellView
 		var sprite = new Sprite();
 		var graphics = sprite.graphics;
 		graphics.beginFill(0xffffff);
-		graphics.drawCircle(center.point.x, center.point.y, 1);
+		graphics.drawCircle(center.elevatedPoint.x, center.elevatedPoint.y, 1);
 		graphics.endFill();
 		return sprite;
 	}
@@ -175,8 +181,8 @@ class CellView
 		if (edge.v0 != null && edge.v1 != null)
 		{
 			graphics.lineStyle(2, 0x000000, 0.125);
-			graphics.moveTo(edge.v0.point.x, edge.v0.point.y);
-			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
+			graphics.moveTo(edge.v0.elevatedPoint.x, edge.v0.elevatedPoint.y);
+			graphics.lineTo(edge.v1.elevatedPoint.x, edge.v1.elevatedPoint.y);
 		}
 	}
 	

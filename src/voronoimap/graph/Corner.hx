@@ -22,4 +22,10 @@ class Corner<T> {
     public var downslope:Corner<T>;  // pointer to adjacent corner most downhill
     public var watershed:Corner<T>;  // pointer to coastal corner, or null
     public var watershed_size:Int;
+	
+	public var elevatedPoint(get, null):Point;
+	inline function get_elevatedPoint():Point
+	{
+		return new Point(point.x, point.y - elevation * CellView.ELEVATION_FACTOR);
+	}
 }

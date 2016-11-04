@@ -19,4 +19,10 @@ class Center<T> {
     public var neighbors:Array<Center<T>>;
     public var borders:Array<Edge<T>>;
     public var corners:Array<Corner<T>>;
+	
+	public var elevatedPoint(get, null):Point;
+	inline function get_elevatedPoint():Point
+	{
+		return new Point(point.x, point.y - elevation * CellView.ELEVATION_FACTOR);
+	}
 }

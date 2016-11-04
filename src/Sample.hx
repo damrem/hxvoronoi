@@ -39,7 +39,7 @@ class Sample extends Sprite
 		
 		
 		//map.go0PlacePoints(10);
-		for (i in 0...250)
+		for (i in 0...1000)
 		{
 			map.points.push(new Point(Math.random() * stg.stageWidth, Math.random() * stg.stageHeight));
 		}
