@@ -24,7 +24,7 @@ class CellView
 	var highlightedColorTransform:ColorTransform;
 	var baseColor:UInt;
 	//var lightVector:Vector3D;
-	public var slopes(default, null):Array<Slope>;
+	var slopes:Array<Slope>;
 
 	public function new(center:Center<CellView>) 
 	{
@@ -57,6 +57,8 @@ class CellView
 		sprite.useHandCursor = sprite.buttonMode = true;
 		//sprite.scaleY = 3 / 4;
 		trace(sprite.name);
+		
+		slopes = [];
 		//sprite.alpha = (4+ center.elevation)/5;
 		//sprite.alpha = center.elevation;
 		
@@ -73,7 +75,7 @@ class CellView
 		
 		trace(baseColor);
 		sprite.addChild(createZone(baseColor));
-		sprite.addChild(createSlopes(/*0.25*/));
+		if (center.biome != Biome.LAKE)	sprite.addChild(createSlopes(/*0.25*/));
 		sprite.addChild(createZone(0x0080ff, center.moisture/2));
 		//sprite.addChild(createCenter());
 		
@@ -129,9 +131,7 @@ class CellView
 
 	function createSlopes(alpha:Float=1):Sprite
 	{
-		slopes = [];
 		var sprite = new Sprite();
-		
 		
 		for (edge in center.borders)
 		{

@@ -47,13 +47,13 @@ class Sample extends Sprite
 		map.go2BuildGraph();
 		
 		map.islandShape = IslandShape.makeRadial(1);
-		map.islandShape = IslandShape.makeBlob();
-		map.islandShape = IslandShape.makeNoise(1);
-		map.islandShape = IslandShape.makePerlin(10);
-		map.go3AssignElevations();
+		//map.islandShape = IslandShape.makeBlob();
+		//map.islandShape = IslandShape.makeNoise(123456789);
+		//map.islandShape = IslandShape.makePerlin(10);
+		map.go3AssignElevations(0.3);
 		
 		
-		map.go4AssignMoisture(50);
+		map.go4AssignMoisture(99);
 		map.go5DecorateMap();
 		
 		/*map.centers = map.centers.filter(function(center:Center)
@@ -178,6 +178,10 @@ class Sample extends Sprite
 		var sprite = new Sprite();
 		sprite.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverOut);
 		sprite.addEventListener(MouseEvent.MOUSE_OUT, onMouseOverOut);
+		centers.sort(function(centerA:Center<CellView>, centerB:Center<CellView>):Int
+		{
+			return Std.int((centerA.point.y - centerB.point.y)*1000);
+		});
 		for (center in centers)
 		{
 			var cellView = new CellView(center);
