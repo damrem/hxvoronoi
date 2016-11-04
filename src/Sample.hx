@@ -39,7 +39,7 @@ class Sample extends Sprite
 		
 		
 		//map.go0PlacePoints(10);
-		for (i in 0...500)
+		for (i in 0...250)
 		{
 			map.points.push(new Point(Math.random() * stg.stageWidth, Math.random() * stg.stageHeight));
 		}
@@ -116,7 +116,23 @@ class Sample extends Sprite
 		//zoneCanvas.mouseChildren = true;
 		//zoneCanvas.addEventListener(MouseEvent.ROLL_OVER, onMouseOverOut);
 		//zoneCanvas.addEventListener(MouseEvent.ROLL_OUT, onMouseOverOut);
+		zoneCanvas.addEventListener(MouseEvent.MOUSE_MOVE, updateLight);
 		
+	}
+	
+	private function updateLight(e:MouseEvent):Void 
+	{
+		lightVector.x = e.stageX - Lib.current.stage.stageWidth / 2;
+		lightVector.y = e.stageY - Lib.current.stage.stageHeight / 2;
+		
+		//var lightVector = new Vector3D(e.localX, e.localY, 0);
+		lightVector.normalize();
+		//lightVector.x
+		
+		for (cellView in cellViewBySpriteName.iterator())
+		{
+			cellView.updateSlopes(lightVector);
+		}
 	}
 	
 	private function onMouseOverOut(e:MouseEvent):Void 
@@ -164,7 +180,7 @@ class Sample extends Sprite
 		sprite.addEventListener(MouseEvent.MOUSE_OUT, onMouseOverOut);
 		for (center in centers)
 		{
-			var cellView = new CellView(center, lightVector);
+			var cellView = new CellView(center);
 			sprite.addChild(cellView.sprite);
 			
 			center.data = cellView;

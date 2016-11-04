@@ -22,11 +22,12 @@ class CellView
 	var defaultColorTransform:ColorTransform;
 	var highlightedColorTransform:ColorTransform;
 	var baseColor:UInt;
-	var lightVector:Vector3D;
+	//var lightVector:Vector3D;
+	public var slopes(default, null):Array<Slope>;
 
-	public function new(center:Center<CellView>, lightVector:Vector3D) 
+	public function new(center:Center<CellView>) 
 	{
-		this.lightVector = lightVector;
+		//this.lightVector = lightVector;
 		
 		var colorByBiome:Map<Biome, Int> = [
 			OCEAN => 0x0080ff,
@@ -119,44 +120,35 @@ class CellView
 		
 		return sprite;
 	}
-	//private static var lightVector:Vector3D = new Vector3D(-1, -1, 0);
-	function calculateLighting(p:Center<CellView>, r:Corner<CellView>, s:Corner<CellView>):Float {
-		var A:Vector3D = new Vector3D(p.point.x, p.point.y, p.elevation);
-		var B:Vector3D = new Vector3D(r.point.x, r.point.y, r.elevation);
-		var C:Vector3D = new Vector3D(s.point.x, s.point.y, s.elevation);
-		var normal:Vector3D = B.subtract(A).crossProduct(C.subtract(A));
-		if (normal.z < 0) { normal.scaleBy( -1); }
-		normal.normalize();
-		var light:Float = 0.5 + 35*normal.dotProduct(lightVector);
-		if (light < 0) light = 0;
-		if (light > 1) light = 1;
-		return light;
-    }
-	
+
 	function createSlopes(alpha:Float=1):Sprite
 	{
+		slopes = [];
 		var sprite = new Sprite();
-		var graphics = sprite.graphics;
+		
 		
 		for (edge in center.borders)
 		{
 			if (edge.v0 == null || edge.v1 == null) continue;
 			
-			var light = calculateLighting(center, edge.v0, edge.v1);
-			var lightColor = light < 0.5?0x000000:0xffffff;
-			var lightAlpha = Math.abs(light - 0.5);
-			
-			graphics.beginFill(lightColor, lightAlpha*alpha);
-			graphics.moveTo(center.point.x, center.point.y);
-			graphics.lineTo(edge.v0.point.x, edge.v0.point.y);
-			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
-			//graphics.lineTo(center.point.x, center.point.y);
-			graphics.endFill();
+			var slope = new Slope(center, edge);
+			sprite.addChild(slope);
+			slopes.push(slope);
 		}
-			
 		
 		return sprite;
 	}
+	
+	
+	public function updateSlopes(lightVector:Vector3D)
+	{
+		for (slope in slopes)
+		{
+			slope.update(lightVector);
+		}
+	}
+	
+	
 	
 	function createCenter():Sprite
 	{
