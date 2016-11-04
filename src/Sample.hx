@@ -38,8 +38,6 @@ class Sample extends Sprite
 		
 		var map = new VoronoiMap( { width:stg.stageWidth, height:stg.stageHeight } );
 		
-		
-		//map.go0PlacePoints(10);
 		for (i in 0...1000)
 		{
 			map.points.push(new Point(Math.random() * stg.stageWidth, Math.random() * stg.stageHeight));
@@ -51,38 +49,12 @@ class Sample extends Sprite
 		//map.islandShape = IslandShape.makeBlob();
 		//map.islandShape = IslandShape.makeNoise(123456789);
 		//map.islandShape = IslandShape.makePerlin(10);
+		
 		map.go3AssignElevations(0.3);
 		
 		
 		map.go4AssignMoisture(99);
 		map.go5DecorateMap();
-		
-		/*map.centers = map.centers.filter(function(center:Center)
-		{
-			//return true;
-			return center.getNeighbors().length == center.corners.length;
-		});*/
-		
-		/*map.centers = map.centers.filter(function(center:Center)
-		{
-			//return true;
-			return center.getNeighbors().length == center.corners.length;
-		});*/
-		
-		/*for (center in map.centers)
-		{
-			if (center.borders.length != center.corners.length)
-			{
-				trace(center.borders.length, center.corners.length);
-				for (border in center.borders)
-				{
-					trace(border.d0, border.d1, border.d0 == border.d1);
-				}
-			}
-		}*/
-		
-		
-		
 		
 		
 		
@@ -124,14 +96,9 @@ class Sample extends Sprite
 	
 	private function updateLight(?e:MouseEvent):Void 
 	{
-		
-		
 		lightVector.x = e != null ? e.stageX - Lib.current.stage.stageWidth / 2 : 1;
 		lightVector.y = e != null ? e.stageY - Lib.current.stage.stageHeight / 2 : 1;
-		
-		//var lightVector = new Vector3D(e.localX, e.localY, 0);
 		lightVector.normalize();
-		//lightVector.x
 		
 		for (cellView in cellViewBySpriteName.iterator())
 		{

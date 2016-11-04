@@ -54,23 +54,12 @@ class CellView
 		sprite = new Sprite();
 		sprite.mouseChildren = false;
 		sprite.useHandCursor = sprite.buttonMode = true;
-		//sprite.scaleY = 3 / 4;
-		trace(sprite.name);
 		
 		slopes = [];
-		//sprite.alpha = (4+ center.elevation)/5;
-		//sprite.alpha = center.elevation;
-		
-		//sprite.name = "cellView" + uid++;// center.point.x + ',' + center.point.y;
-		//sprite.mouseChildren = false;
 		
 		this.baseColor = colorByBiome[center.biome];
 		//sprite.addChild(createBorders());
 		//sprite.addChild(createCorners());
-		
-		//baseColor = !center.water 
-		//? RndColor.green(0.5, 1) + RndColor.red(0.25, 0.5) 
-		//: 0x0080ff;
 		
 		trace(baseColor);
 		sprite.addChild(createZone(baseColor));
@@ -78,15 +67,7 @@ class CellView
 		sprite.addChild(createZone(0x0080ff, center.moisture/2));
 		//sprite.addChild(createCenter());
 		
-		//var bc = new ARGB();
-		//bc.
 		
-		//var defaultOffset = Math.round((center.elevation - 0.25) * 256);
-		//trace(defaultOffset);
-		//defaultOffset = 0;
-		//defaultColorTransform = new ColorTransform();
-		//highlightedColorTransform = defaultColorTransform.clone();
-		//highlightedColorTransform.redOffset = highlightedColorTransform.greenOffset = highlightedColorTransform.blueOffset = defaultOffset * 2;
 	
 	}
 	
