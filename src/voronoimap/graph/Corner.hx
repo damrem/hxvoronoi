@@ -12,8 +12,8 @@ class Corner<T> extends AbstractGraphPoint
     public var watershed:Corner<T>;  // pointer to coastal corner, or null
     public var watershed_size:Int;
 	
-	public function new(elevationFactor:Float) {
-		super(elevationFactor);
+	public function new(/*elevationFactor:Float*/) {
+		super(/*elevationFactor*/);
 		
 	}
 }

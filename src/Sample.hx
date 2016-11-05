@@ -13,7 +13,6 @@ import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
 import voronoimap.graph.Edge;
 import voronoimap.IslandShape;
-import voronoimap.VoronoiMap;
 using hxlpers.lime.math.Vector2Extender;
 using CenterExtender;
 using hxlpers.geom.PolygonExtender;

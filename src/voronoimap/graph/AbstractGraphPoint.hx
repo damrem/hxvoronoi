@@ -24,7 +24,7 @@ class AbstractGraphPoint extends AbstractGraphItem
     public var border:Bool;  // at the edge of the map
     public var moisture:Float;  // 0.0-1.0
 
-	public function new(elevationFactor:Float)
+	public function new(elevationFactor:Float=50)
 	{
 		this.elevationFactor = elevationFactor;
 		
