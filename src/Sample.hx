@@ -16,7 +16,6 @@ import voronoimap.IHasCenter;
 import voronoimap.IslandShape;
 import voronoimap.VoronoiMap;
 using hxlpers.lime.math.Vector2Extender;
-using CenterExtender;
 using hxlpers.geom.PolygonExtender;
 /**
  * ...
@@ -131,7 +130,7 @@ class Sample extends Sprite
 		
 		var center = cellView.center;
 		
-		for (neighbor in center.getNeighbors())
+		for (neighbor in center.getActualNeighbors())
 		{
 			var neighborCellView = neighbor.data;
 			if (neighborCellView != null)

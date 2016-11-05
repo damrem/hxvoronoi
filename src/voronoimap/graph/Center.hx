@@ -1,5 +1,6 @@
 package voronoimap.graph;
 import openfl.geom.Point;
+using Lambda;
 
 class Center<T:(IHasCenter<T>)> extends AbstractGraphPoint
 {
@@ -10,5 +11,16 @@ class Center<T:(IHasCenter<T>)> extends AbstractGraphPoint
 	
 	public function new() {
 		super();
+	}
+	
+	public function getActualNeighbors():Array<Center<T>>
+	{
+		return neighbors.filter(function(center:Center<T>):Bool
+		{
+			return corners.exists(function(corner:Corner<T>)
+			{
+				return center.corners.indexOf(corner) >= 0;
+			});
+		});
 	}
 }
