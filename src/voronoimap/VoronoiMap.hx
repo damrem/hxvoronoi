@@ -286,14 +286,6 @@ class VoronoiMap<T> {
 		for (i in 0...corners.length) {
 			corners[i].point = newCorners[i];
 		}
-
-		// The edge midpoints were computed for the old corners and need
-		// to be recomputed.
-		for (edge in edges) {
-			if (edge.v0 != null && edge.v1 != null) {
-				edge.midpoint = Point.interpolate(edge.v0.point, edge.v1.point, 0.5);
-			}
-		}
 	}
 
 	/**
@@ -394,7 +386,6 @@ class VoronoiMap<T> {
           edge.index = edges.length;
           edge.river = 0;
           edges.push(edge);
-          edge.midpoint = (vedge.p0 != null && vedge.p1 != null) ? Point.interpolate(vedge.p0, vedge.p1, 0.5) : null;
 		  
           // Edges point to corners. Edges point to centers. 
           edge.v0 = makeCorner(vedge.p0);
