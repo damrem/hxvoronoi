@@ -32,7 +32,7 @@ class NoisyEdges {
     public function buildNoisyEdges( map : Map, lava : Lava, seed : Int, noisyLineTradeoff = 0.5 ) : Void {
       var p:Center, edge:Edge;
       for (p in map.centers) {
-          for (edge in p.borders) {
+          for (edge in p.edges) {
               if (edge.d0.isNotNull() && edge.d1.isNotNull() && edge.v0.isNotNull() && edge.v1.isNotNull() && path0[edge.index].isNull()) {
                 var f:Number = noisyLineTradeoff;
                 var t:Point = PointCore.interpolate(edge.v0.point, edge.d0.point, f);

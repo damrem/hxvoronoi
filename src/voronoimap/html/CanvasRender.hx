@@ -377,7 +377,7 @@ class CanvasRender {
 			if (roads.roadConnections[p.index].isNotNull()) {
 				if (roads.roadConnections[p.index].length == 2) {
 					// Regular road: draw a spline from one edge to the other.
-					edges = p.borders;
+					edges = p.edges;
 					for (i in 0...edges.length) {
 						edge1 = edges[i];
 						if (roads.road[edge1.index] > 0) {
@@ -415,7 +415,7 @@ class CanvasRender {
 				else {
 					// Intersection or dead end: draw a road spline from
 					// each edge to the center
-					for (edge1 in p.borders) {
+					for (edge1 in p.edges) {
 						if (roads.road[edge1.index] > 0) {
 							d = 0.25 * edge1.midpoint.subtract(p.point).distanceFromOrigin();
 							A = normalTowards(edge1, p.point, d).add(edge1.midpoint);

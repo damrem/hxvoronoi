@@ -109,7 +109,7 @@ class CellView
 	{
 		var sprite = new Sprite();
 		
-		for (edge in center.borders)
+		for (edge in center.edges)
 		{
 			if (edge.v0 == null || edge.v1 == null) continue;
 			
@@ -145,7 +145,7 @@ class CellView
 	function createBorders():Sprite
 	{
 		var sprite = new Sprite();
-		for (edge in center.borders)
+		for (edge in center.edges)
 		{
 			drawBorder(edge, sprite.graphics);
 		}

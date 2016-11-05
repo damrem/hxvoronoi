@@ -178,7 +178,7 @@ class VoronoiMap<T> {
 			for (p in centers) {
 				p.neighbors.splice(0, p.neighbors.length);
 				p.corners.splice(0, p.corners.length);
-				p.borders.splice(0, p.borders.length);
+				p.edges.splice(0, p.edges.length);
 			}
 			centers.splice(0, centers.length);
 		}
@@ -334,7 +334,7 @@ class VoronoiMap<T> {
           p.index = centers.length;
           p.point = point;
           p.neighbors = new  Array<Center<T>>();
-          p.borders = new Array<Edge<T>>();
+          p.edges = new Array<Edge<T>>();
           p.corners = new Array<Corner<T>>();
           centers.push(p);
           centerLookup.set(point.toString(), p);
@@ -403,8 +403,8 @@ class VoronoiMap<T> {
           edge.d1 = centerLookup.get(dedge.p1.toString());
 
           // Centers point to edges. Corners point to edges.
-          if (edge.d0 != null) { edge.d0.borders.push(edge); }
-          if (edge.d1 != null) { edge.d1.borders.push(edge); }
+          if (edge.d0 != null) { edge.d0.edges.push(edge); }
+          if (edge.d1 != null) { edge.d1.edges.push(edge); }
           if (edge.v0 != null) { edge.v0.protrudes.push(edge); }
           if (edge.v1 != null) { edge.v1.protrudes.push(edge); }
 
@@ -841,7 +841,7 @@ class VoronoiMap<T> {
 	 * polygons, or two adjacent Voronoi corners
 	 */
     public function lookupEdgeFromCenter(p:Center<T>, r:Center<T>):Edge<T> {
-      for (edge in p.borders) {
+      for (edge in p.edges) {
           if (edge.d0 == r || edge.d1 == r) return edge;
         }
       return null;
