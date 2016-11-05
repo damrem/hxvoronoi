@@ -15,7 +15,7 @@ import voronoimap.Size;
 using Lambda;
 using com.nodename.delaunay.BoolExtender;
 
-class VoronoiMap<T> extends VoronoiGrid<T>{
+class VoronoiMap extends VoronoiGrid<Zone>{
 	var elevationFactor:Float;
 
 	public static inline var DEFAULT_LAKE_THRESHOLD = 0.3;
@@ -87,7 +87,7 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 		// Determine downslope paths.
 		calculateDownslopes();
 
-		// Determine watersheds: for every Corner<T>, where does it flow
+		// Determine watersheds: for every Corner<Zone>, where does it flow
 		// out into the ocean? 
 		calculateWatersheds();
 
@@ -100,7 +100,9 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 		// to 1.0. Then assign polygon moisture as the average
 		// of the corner moisture.
 		assignCornerMoisture();
-		redistributeMoisture(landCorners(corners));
+		redistributeMoisture(
+			landCorners(corners)
+		);
 		assignPolygonMoisture();		
 	}
 	
@@ -114,8 +116,8 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 	 * of a vector because the redistribution algorithms want to sort
 	 * this array using Array.sortOn.
 	 */
-    public function landCorners(corners:Array<Corner<T>>):Array<Corner<T>> {
-		var q:Corner<T>, locations:Array<Corner<T>> = [];
+    public function landCorners(corners:Array<Corner<Zone>>):Array<Corner<Zone>> {
+		var q:Corner<Zone>, locations:Array<Corner<Zone>> = [];
 		for (q in corners) {
 			if (!q.ocean && !q.coast) {
 				locations.push(q);
@@ -135,8 +137,8 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 	 * elevation as much as other terrain does.
 	 */
     public function assignCornerElevations():Void {
-      var q:Corner<T>, s:Corner<T>;
-      var queue:Array<Corner<T>> = [];
+      var q:Corner<Zone>, s:Corner<Zone>;
+      var queue:Array<Corner<Zone>> = [];
       
       for (q in corners) {
           q.water = !inside(q.point);
@@ -183,7 +185,7 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 	 * (1-X).  To do this we will sort the corners, then set each
 	 * corner to its desired elevation.
 	 */
-    public function redistributeElevations(locations:Array<Corner<T>>):Void {
+    public function redistributeElevations(locations:Array<Corner<Zone>>):Void {
       // SCALE_FACTOR increases the mountain area. At 1.0 the maximum
       // elevation barely shows up on the map, so we set it to 1.1.
       var SCALE_FACTOR:Float = 1.1;
@@ -219,7 +221,7 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
     /**
      * Change the overall distribution of moisture to be evenly distributed.
      */
-    public function redistributeMoisture(locations:Array<Corner<T>>):Void {
+    public function redistributeMoisture(locations:Array<Corner<Zone>>):Void {
 		var i:Int;
       
 		locations.sort(function(c1, c2) {
@@ -245,8 +247,8 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
       // map. In the first pass, mark the edges of the map as ocean;
       // in the second pass, mark any water-containing polygon
       // connected an ocean as ocean.
-      var queue:Array<Center<T>> = [];
-      var p:Center<T>, q:Corner<T>, r:Center<T>, numWater:Int;
+      var queue:Array<Center<Zone>> = [];
+      var p:Center<Zone>, q:Corner<Zone>, r:Center<Zone>, numWater:Int;
       
       for (p in centers) {
           numWater = 0;
@@ -308,7 +310,7 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
      * Polygon elevations are the average of the elevations of their corners.
      */
     public function assignPolygonElevations():Void {
-		var p:Center<T>, q:Corner<T>, sumElevation:Float;
+		var p:Center<Zone>, q:Corner<Zone>, sumElevation:Float;
 		for (p in centers) {
 			sumElevation = 0.0;
 			for (q in p.corners) {
@@ -324,7 +326,7 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 	 * generating rivers and watersheds.
 	 */
     public function calculateDownslopes():Void {
-      var q:Corner<T>, s:Corner<T>, r:Corner<T>;
+      var q:Corner<Zone>, s:Corner<Zone>, r:Corner<Zone>;
       
       for (q in corners) {
           r = q;
@@ -345,7 +347,7 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 	 * polygon can be marked as being in one watershed.
 	 */
     public function calculateWatersheds():Void {
-      var q:Corner<T>, r:Corner<T>, i:Int, changed:Bool;
+      var q:Corner<Zone>, r:Corner<Zone>, i:Int, changed:Bool;
       
       // Initially the watershed pointer points downslope one step.      
       for (q in corners) {
@@ -389,7 +391,7 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 		
 		riverChance = riverChance.coalesce(Std.int((SIZE.width + SIZE.height) / 4));
 		
-		var i:Int, q:Corner<T>, edge:Edge<T>;
+		var i:Int, q:Corner<Zone>, edge:Edge<Zone>;
       
 		for (i in 0...riverChance) {
 			q = corners[mapRandom.nextIntRange(0, corners.length-1)];
@@ -421,8 +423,8 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 	 * not spread it (we set it at the end, after propagation).
 	 */
     public function assignCornerMoisture():Void {
-      var q:Corner<T>, r:Corner<T>, newMoisture:Float;
-      var queue:Array<Corner<T>> = [];
+      var q:Corner<Zone>, r:Corner<Zone>, newMoisture:Float;
+      var queue:Array<Corner<Zone>> = [];
       // Fresh water
       for (q in corners) {
           if ((q.water || q.river > 0) && !q.ocean) {
@@ -455,7 +457,7 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
      * Polygon moisture is the average of the moisture at corners
      */
     public function assignPolygonMoisture():Void {
-      var p:Center<T>, q:Corner<T>, sumMoisture:Float;
+      var p:Center<Zone>, q:Corner<Zone>, sumMoisture:Float;
       for (p in centers) {
           sumMoisture = 0.0;
           for (q in p.corners) {
@@ -473,7 +475,7 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 	 * roughly based on the Whittaker diagram but adapted to fit the
 	 * needs of the island map generator.
 	 */
-    static public function getBiome<T>(p:Center<T>):Biome {
+    static public function getBiome(p:Center<Zone>):Biome {
       if (p.ocean) {
         return OCEAN;
       } else if (p.water) {
@@ -505,9 +507,10 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
     }
 	
     public function assignBiomes():Void {
-      var p:Center<T>;
+      //var p:Center<Zone>;
       for (p in centers) {
-          p.biome = getBiome(p);
+		  var biome = getBiome(p);
+          p.data.biome = biome;
         }
     }
 	
@@ -521,7 +524,7 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 	// ------------------------------------------------------------------------
 	// Extensions
 	
-	public static function countLands<T>( centers : Array<Center<T>> ) : Int {
+	public static function countLands( centers : Array<Center<Zone>> ) : Int {
 		return centers.count(function(c) { return !c.water; } );
 	}
 	
@@ -529,14 +532,14 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 	 * Rebuilds the map varying the number of points until desired number of land centers are generated or timeout is reached.
 	 * Not an efficient algorithim, but gets the job done.
 	 */
-	public static function tryMutateMapPointsToGetNumberLands<T>( map : VoronoiMap<T>, numberOfLands : Int, timeoutSeconds = 10, initialNumberOfPoints = VoronoiGrid.DEFAULT_NUMBER_OF_POINTS, numLloydIterations = VoronoiGrid.DEFAULT_LLOYD_ITERATIONS, lakeThreshold = DEFAULT_LAKE_THRESHOLD ) : VoronoiMap<T> {
+	/*public static function tryMutateMapPointsToGetNumberLands<T>( map : VoronoiMap, numberOfLands : Int, timeoutSeconds = 10, initialNumberOfPoints = VoronoiGrid.DEFAULT_NUMBER_OF_POINTS, numLloydIterations = VoronoiGrid.DEFAULT_LLOYD_ITERATIONS, lakeThreshold = DEFAULT_LAKE_THRESHOLD, dataConstructor:Center<T>->T ) : VoronoiMap {
 		var pointCount = initialNumberOfPoints;
 		var startTime = Timer.stamp();
 		var targetLandCountFound = false;
 		do {
 			map.go0PlacePoints(pointCount);
 			map.go1ImprovePoints(numLloydIterations);
-			map.go2BuildGraph();
+			map.go2BuildGraph(dataConstructor);
 			map.go3AssignElevations(lakeThreshold);
 			var lands = countLands(map.centers);
 			if (lands == numberOfLands)
@@ -546,6 +549,6 @@ class VoronoiMap<T> extends VoronoiGrid<T>{
 		} while (!targetLandCountFound && Timer.stamp() - startTime < timeoutSeconds);
 		
 		return map;
-	}
+	}*/
 	
 }

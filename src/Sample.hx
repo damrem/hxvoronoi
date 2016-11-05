@@ -12,6 +12,7 @@ import openfl.Lib;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
 import voronoimap.graph.Edge;
+import voronoimap.IHasCenter;
 import voronoimap.IslandShape;
 import voronoimap.VoronoiMap;
 using hxlpers.lime.math.Vector2Extender;
@@ -26,14 +27,14 @@ class Sample extends Sprite
 
 	//var cellViewByCenter:Map<Center, CellView>;
 	public static inline var ELEVATION_FACTOR:Float = 100;
-	var cellViewBySpriteName:Map<String, CellView>;
+	var cellViewBySpriteName:Map<String, Zone>;
 	var lightVector:Vector3D = new Vector3D(-1, -1, 0);
 	
 	public function new() 
 	{
 		super();
 		
-		cellViewBySpriteName = new Map<String, CellView>();
+		cellViewBySpriteName = new Map<String, Zone>();
 		
 		var stg = Lib.current.stage;
 		
@@ -44,7 +45,7 @@ class Sample extends Sprite
 			map.points.push(new Point(Math.random() * stg.stageWidth, Math.random() * stg.stageHeight));
 		}
 		map.go1ImprovePoints(8);
-		map.go2BuildGraph();
+		map.go2BuildGraph(createZone);
 		
 		map.islandShape = IslandShape.makeRadial(1);
 		//map.islandShape = IslandShape.makeBlob();
@@ -109,6 +110,11 @@ class Sample extends Sprite
 		}
 	}
 	
+	function createZone(center:Center<Zone>):Zone
+	{
+		return new Zone(center);
+	}
+	
 	private function onMouseOverOut(e:MouseEvent):Void 
 	{
 		var openflSprite = cast(e.target, openfl.display.Sprite);
@@ -147,18 +153,19 @@ class Sample extends Sprite
 		return canvas;
 	}
 	
-	function createCellViews(centers:Array<Center<CellView>>):Sprite
+	function createCellViews(centers:Array<Center<Zone>>):Sprite
 	{
 		var sprite = new Sprite();
 		sprite.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverOut);
 		sprite.addEventListener(MouseEvent.MOUSE_OUT, onMouseOverOut);
-		centers.sort(function(centerA:Center<CellView>, centerB:Center<CellView>):Int
+		centers.sort(function(centerA:Center<Zone>, centerB:Center<Zone>):Int
 		{
 			return Std.int((centerA.point.y - centerB.point.y)*1000);
 		});
 		for (center in centers)
 		{
-			var cellView = new CellView(center);
+			var cellView = center.data;
+			cellView.draw();
 			sprite.addChild(cellView.sprite);
 			
 			center.data = cellView;
@@ -167,7 +174,7 @@ class Sample extends Sprite
 		return sprite;
 	}
 	
-	function createEdgeViews(edges:Array<Edge<CellView>>):Sprite
+	function createEdgeViews(edges:Array<Edge<Zone>>):Sprite
 	{
 		var sprite = new Sprite();
 		for (edge in edges)
@@ -177,7 +184,7 @@ class Sample extends Sprite
 		return sprite;
 	}
 	
-	function createEdge(edge:Edge<CellView>, graphics:Graphics)
+	function createEdge(edge:Edge<Zone>, graphics:Graphics)
 	{
 		if (edge.v0 != null && edge.v1 != null && !edge.d0.water && !edge.d1.water)
 		{
@@ -192,7 +199,7 @@ class Sample extends Sprite
 	}
 	
 	
-	function createCorners(corners:Array<Corner<CellView>>):Sprite
+	function createCorners(corners:Array<Corner<Zone>>):Sprite
 	{
 		var sprite = new Sprite();
 		for (corner in corners)
@@ -202,7 +209,7 @@ class Sample extends Sprite
 		return sprite;
 	}
 	
-	function drawCorner(corner:Corner<CellView>, graphics:Graphics) 
+	function drawCorner(corner:Corner<Zone>, graphics:Graphics) 
 	{
 		graphics.beginFill(0xffffff);
 		graphics.drawCircle(corner.point.x, corner.point.y, 1);

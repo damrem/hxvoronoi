@@ -8,12 +8,13 @@ import openfl.geom.Rectangle;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
 import voronoimap.graph.Edge;
+import voronoimap.IHasCenter;
 import voronoimap.Size;
 
 using Lambda;
 using com.nodename.delaunay.BoolExtender;
 
-class VoronoiGrid<T> {
+class VoronoiGrid<T:(IHasCenter<T>)> {
 
 	public static inline var DEFAULT_LLOYD_ITERATIONS = 2;
 	public static inline var DEFAULT_NUMBER_OF_POINTS = 1000;
@@ -74,9 +75,9 @@ class VoronoiGrid<T> {
      * to the edge, a map from these four points to the points
      * they connect to (both along the edge and crosswise).
 	 */
-	public function go2BuildGraph() : Void {
+	public function go2BuildGraph(dataConstructor:Center<T>->T) : Void {
 	   var voronoi:Voronoi = new Voronoi(points, null, new Rectangle(0, 0, SIZE.width, SIZE.height));
-	   buildGraph(points, voronoi);
+	   buildGraph(points, voronoi, dataConstructor);
 	   improveCorners();
 	   voronoi.dispose();
 	   voronoi = null;
@@ -218,7 +219,7 @@ class VoronoiGrid<T> {
 	 * For boundary polygons, the Delaunay edge will have one null
 	 * point, and the Voronoi edge may be null.
 	 */
-    public function buildGraph(points:Array<Point>, voronoi:Voronoi):Void {
+    public function buildGraph(points:Array<Point>, voronoi:Voronoi, dataConstructor:Center<T> -> T):Void {
       var p:Center<T>, q:Corner<T>, point:Point, other:Point;
       var libedges:Array<com.nodename.delaunay.Edge> = voronoi.edges();
       var centerLookup:Map<String, Center<T>> = new Map<String, Center<T>>();
@@ -226,7 +227,9 @@ class VoronoiGrid<T> {
       // Build Center objects for each of the points, and a lookup map
       // to find those Center objects again as we build the graph
       for (point in points) {
-          p = new Center<T>(/*elevationFactor*/);//FIXME
+          p = new Center<T>();//FIXME
+		  p.data = dataConstructor(p);
+		  p.data.center = p;
           p.index = centers.length;
           p.point = point;
           p.neighbors = new  Array<Center<T>>();

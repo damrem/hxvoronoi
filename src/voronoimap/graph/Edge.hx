@@ -1,7 +1,7 @@
 package voronoimap.graph;
 import openfl.geom.Point;
 
-class Edge<T> extends AbstractGraphItem
+class Edge<T:IHasCenter<T>> extends AbstractGraphItem
 {
     public var d0:Center<T>; public var d1:Center<T>;  // Delaunay edge
     public var v0:Corner<T>; public var v1:Corner<T>;  // Voronoi edge

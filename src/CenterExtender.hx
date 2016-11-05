@@ -1,6 +1,7 @@
 package;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
+import voronoimap.IHasCenter;
 
 /**
  * ...
@@ -9,7 +10,7 @@ import voronoimap.graph.Corner;
 class CenterExtender
 {
 
-	static public function getNeighbors<T>(centerA:Center<T>):Array<Center<T>>
+	static public function getNeighbors<T:IHasCenter<T>>(centerA:Center<T>):Array<Center<T>>
 	{
 		return centerA.neighbors.filter(function(centerB:Center<T>):Bool
 		{

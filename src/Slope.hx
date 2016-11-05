@@ -13,9 +13,9 @@ import voronoimap.graph.Edge;
  */
 class Slope extends Sprite
 {
-	var center:Center<CellView>;
-	var edge:Edge<CellView>;
-	public function new(center:Center<CellView>, edge:Edge<CellView>) 
+	var center:Center<Zone>;
+	var edge:Edge<Zone>;
+	public function new(center:Center<Zone>, edge:Edge<Zone>) 
 	{
 		super();
 		this.edge = edge;
@@ -37,7 +37,7 @@ class Slope extends Sprite
 		transform.colorTransform = new ColorTransform(1, 1, 1, alphaMultiplier, lightOffset, lightOffset, lightOffset/*, alphaOffset*/);
 	}
 	
-	function calculateLighting(lightVector:Vector3D, p:Center<CellView>, r:Corner<CellView>, s:Corner<CellView>):Float 
+	function calculateLighting(lightVector:Vector3D, p:Center<Zone>, r:Corner<Zone>, s:Corner<Zone>):Float 
 	{
 		var A:Vector3D = new Vector3D(p.point.x, p.point.y, p.elevation);
 		var B:Vector3D = new Vector3D(r.point.x, r.point.y, r.elevation);

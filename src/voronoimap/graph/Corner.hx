@@ -1,7 +1,7 @@
 package voronoimap.graph;
 import openfl.geom.Point;
 
-class Corner<T> extends AbstractGraphPoint
+class Corner<T:(IHasCenter<T>)> extends AbstractGraphPoint
 {
     public var touches:Array<Center<T>>;
     public var protrudes:Array<Edge<T>>;
