@@ -126,9 +126,9 @@ class Sample extends Sprite
 		
 		var over = e.type == MouseEvent.ROLL_OVER || e.type == MouseEvent.MOUSE_OVER;
 		
-		cellView.highlight(over?0.25:0);
+		cellView.highlight(this, over);
 		
-		var center = cellView.center;
+		/*var center = cellView.center;
 		
 		for (neighbor in center.getActualNeighbors())
 		{
@@ -137,7 +137,7 @@ class Sample extends Sprite
 			{
 				neighborCellView.highlight(over?0.125:0);
 			}
-		}
+		}*/
 	}
 	
 	function drawPoints(points:Array<Point>):Shape
@@ -176,6 +176,7 @@ class Sample extends Sprite
 	function createEdgeViews(edges:Array<Edge<Zone>>):Sprite
 	{
 		var sprite = new Sprite();
+		sprite.mouseEnabled = false;
 		for (edge in edges)
 		{
 			createEdge(edge, sprite.graphics);

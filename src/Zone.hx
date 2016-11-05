@@ -1,4 +1,5 @@
 package;
+import flash.display.DisplayObjectContainer;
 import lime.math.Vector2;
 import openfl.display.Graphics;
 import openfl.display.Sprite;
@@ -46,6 +47,8 @@ class Zone implements IHasCenter<Zone>
 	var defaultColorTransform:ColorTransform;
 	var highlightedColorTransform:ColorTransform;
 	var slopes:Array<Slope>;
+	var sortedCorners:Array<Corner<Zone>>;
+	public var border:Sprite;
 
 	public function new(center:Center<Zone>) 
 	{
@@ -58,17 +61,24 @@ class Zone implements IHasCenter<Zone>
 		
 		//if(!center.water)	sprite.addChild(createCenter(0.25));
 		
+		
+		
 	}
 	
-	public function highlight(lightness:Float = 0)
+	public function highlight(container:DisplayObjectContainer, yes:Bool=true)
 	{
-		var o = lightness * 256;
-		sprite.transform.colorTransform = new ColorTransform(1,1,1,1,o,o,o);
+		//var o = lightness * 256;
+		//sprite.transform.colorTransform = new ColorTransform(1,1,1,1,o,o,o);
 		//trace(center.border, center.coast, center.moisture, center.biome);
+		if (yes)	container.addChild(border);
+		else 		container.removeChild(border);
 	}
 	
 	public function draw():Sprite
 	{
+		sortedCorners = center.corners.copy();
+		sortedCorners.sort(sortCorners);
+		
 		sprite = new Sprite();
 		sprite.mouseChildren = false;
 		sprite.useHandCursor = sprite.buttonMode = true;
@@ -79,17 +89,11 @@ class Zone implements IHasCenter<Zone>
 		
 		//if (biome == null) biome = SUBTROPICAL_DESERT;
 		
-		graphics.beginFill(colorByBiome[biome], center.moisture / 2);
-		var corners = center.corners.copy();
-		corners.sort(function(cornerA:Corner<Zone>, cornerB:Corner<Zone>)
-		{
-			var va = new Vector2(cornerA.point.x - center.point.x, cornerA.point.y - center.point.y);
-			var vb = new Vector2(cornerB.point.x - center.point.x, cornerB.point.y - center.point.y);
-			return Std.int(va.getAngle()*100 - vb.getAngle()*100);
-		});
-		var lastCorner = corners[corners.length - 1];
+		graphics.beginFill(colorByBiome[biome]/*, center.moisture / 2*/);
+		
+		var lastCorner = sortedCorners[sortedCorners.length - 1];
 		graphics.moveTo(lastCorner.elevatedPoint.x, lastCorner.elevatedPoint.y);
-		for (corner in corners)
+		for (corner in sortedCorners)
 		{
 			graphics.lineTo(corner.elevatedPoint.x, corner.elevatedPoint.y);
 		}
@@ -97,8 +101,17 @@ class Zone implements IHasCenter<Zone>
 		
 		if (biome != Biome.LAKE)	sprite.addChild(createSlopes(/*0.25*/));
 		
+		border = createBorders();
+		
 		return sprite;
 	}
+	
+	function sortCorners(cornerA:Corner<Zone>, cornerB:Corner<Zone>)
+		{
+			var va = new Vector2(cornerA.point.x - center.point.x, cornerA.point.y - center.point.y);
+			var vb = new Vector2(cornerB.point.x - center.point.x, cornerB.point.y - center.point.y);
+			return Std.int(va.getAngle()*100 - vb.getAngle()*100);
+		}
 	
 	function createSlopes(alpha:Float=1):Sprite
 	{
@@ -140,10 +153,18 @@ class Zone implements IHasCenter<Zone>
 	function createBorders():Sprite
 	{
 		var sprite = new Sprite();
-		for (edge in center.edges)
+		sprite.mouseEnabled = false;
+		//sprite.alpha = 0.5;
+		var graphics = sprite.graphics;
+		var lastCorner = sortedCorners[sortedCorners.length - 1];
+		graphics.moveTo(lastCorner.elevatedPoint.x, lastCorner.elevatedPoint.y);
+		graphics.lineStyle(2, 0xffffff, 0.5);
+		
+		for (corner in sortedCorners)
 		{
-			drawBorder(edge, sprite.graphics);
+			graphics.lineTo(corner.elevatedPoint.x, corner.elevatedPoint.y);
 		}
+		
 		return sprite;
 	}
 	
@@ -151,7 +172,7 @@ class Zone implements IHasCenter<Zone>
 	{
 		if (edge.v0 != null && edge.v1 != null)
 		{
-			graphics.lineStyle(2, 0x000000, 0.125);
+			graphics.lineStyle(2, 0x000000);
 			graphics.moveTo(edge.v0.elevatedPoint.x, edge.v0.elevatedPoint.y);
 			graphics.lineTo(edge.v1.elevatedPoint.x, edge.v1.elevatedPoint.y);
 		}
