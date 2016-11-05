@@ -24,6 +24,7 @@ class Sample extends Sprite
 {
 
 	//var cellViewByCenter:Map<Center, CellView>;
+	public static inline var ELEVATION_FACTOR:Float = 100;
 	var cellViewBySpriteName:Map<String, CellView>;
 	var lightVector:Vector3D = new Vector3D(-1, -1, 0);
 	
@@ -37,9 +38,7 @@ class Sample extends Sprite
 		
 		var map = new VoronoiMap( { width:stg.stageWidth, height:stg.stageHeight } );
 		
-		
-		//map.go0PlacePoints(10);
-		for (i in 0...500)
+		for (i in 0...1000)
 		{
 			map.points.push(new Point(Math.random() * stg.stageWidth, Math.random() * stg.stageHeight));
 		}
@@ -47,41 +46,15 @@ class Sample extends Sprite
 		map.go2BuildGraph();
 		
 		map.islandShape = IslandShape.makeRadial(1);
-		map.islandShape = IslandShape.makeBlob();
-		map.islandShape = IslandShape.makeNoise(1);
-		map.islandShape = IslandShape.makePerlin(10);
-		map.go3AssignElevations();
+		//map.islandShape = IslandShape.makeBlob();
+		//map.islandShape = IslandShape.makeNoise(123456789);
+		//map.islandShape = IslandShape.makePerlin(10);
+		
+		map.go3AssignElevations(0.3);
 		
 		
-		map.go4AssignMoisture(50);
+		map.go4AssignMoisture(99);
 		map.go5DecorateMap();
-		
-		/*map.centers = map.centers.filter(function(center:Center)
-		{
-			//return true;
-			return center.getNeighbors().length == center.corners.length;
-		});*/
-		
-		/*map.centers = map.centers.filter(function(center:Center)
-		{
-			//return true;
-			return center.getNeighbors().length == center.corners.length;
-		});*/
-		
-		/*for (center in map.centers)
-		{
-			if (center.borders.length != center.corners.length)
-			{
-				trace(center.borders.length, center.corners.length);
-				for (border in center.borders)
-				{
-					trace(border.d0, border.d1, border.d0 == border.d1);
-				}
-			}
-		}*/
-		
-		
-		
 		
 		
 		
@@ -110,13 +83,27 @@ class Sample extends Sprite
 		stg.stageHeight / stg.stageWidth;
 
 		addChild(zoneCanvas);
-		//addChild(edgeCanvas);
+		addChild(edgeCanvas);
 		//addChild(centerCanvas);
 		//addChild(cornerCanvas);
 		//zoneCanvas.mouseChildren = true;
 		//zoneCanvas.addEventListener(MouseEvent.ROLL_OVER, onMouseOverOut);
 		//zoneCanvas.addEventListener(MouseEvent.ROLL_OUT, onMouseOverOut);
+		zoneCanvas.addEventListener(MouseEvent.MOUSE_MOVE, updateLight);
+		updateLight();
 		
+	}
+	
+	private function updateLight(?e:MouseEvent):Void 
+	{
+		lightVector.x = e != null ? e.stageX - Lib.current.stage.stageWidth / 2 : 1;
+		lightVector.y = e != null ? e.stageY - Lib.current.stage.stageHeight / 2 : 1;
+		lightVector.normalize();
+		
+		for (cellView in cellViewBySpriteName.iterator())
+		{
+			cellView.updateSlopes(lightVector);
+		}
 	}
 	
 	private function onMouseOverOut(e:MouseEvent):Void 
@@ -162,9 +149,13 @@ class Sample extends Sprite
 		var sprite = new Sprite();
 		sprite.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverOut);
 		sprite.addEventListener(MouseEvent.MOUSE_OUT, onMouseOverOut);
+		centers.sort(function(centerA:Center<CellView>, centerB:Center<CellView>):Int
+		{
+			return Std.int((centerA.point.y - centerB.point.y)*1000);
+		});
 		for (center in centers)
 		{
-			var cellView = new CellView(center, lightVector);
+			var cellView = new CellView(center);
 			sprite.addChild(cellView.sprite);
 			
 			center.data = cellView;
@@ -185,11 +176,15 @@ class Sample extends Sprite
 	
 	function createEdge(edge:Edge<CellView>, graphics:Graphics)
 	{
-		if (edge.v0 != null && edge.v1 != null)
+		if (edge.v0 != null && edge.v1 != null && !edge.v0.water && !edge.v1.water)
 		{
-			graphics.lineStyle(2, 0xff0000);
-			graphics.moveTo(edge.v0.point.x, edge.v0.point.y);
-			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
+			var isRiver = edge.river >= 1;
+			var edgeThickness = isRiver ? 2 : 1;
+			var edgeColor = isRiver ? 0x0080ff : 0xffffff;
+			var edgeAlpha = isRiver ? 1 : 0.25;
+			graphics.lineStyle(edgeThickness, edgeColor, edgeAlpha);
+			graphics.moveTo(edge.v0.elevatedPoint.x, edge.v0.elevatedPoint.y);
+			graphics.lineTo(edge.v1.elevatedPoint.x, edge.v1.elevatedPoint.y);
 		}
 	}
 	

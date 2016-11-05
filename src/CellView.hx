@@ -18,15 +18,16 @@ class CellView
 {
 	public var center(default, null):Center<CellView>;
 	public var sprite:Sprite;
+	
 	static var uid:UInt = 0;
 	var defaultColorTransform:ColorTransform;
 	var highlightedColorTransform:ColorTransform;
 	var baseColor:UInt;
-	var lightVector:Vector3D;
+	var slopes:Array<Slope>;
 
-	public function new(center:Center<CellView>, lightVector:Vector3D) 
+	public function new(center:Center<CellView>) 
 	{
-		this.lightVector = lightVector;
+		//this.lightVector = lightVector;
 		
 		var colorByBiome:Map<Biome, Int> = [
 			OCEAN => 0x0080ff,
@@ -53,37 +54,21 @@ class CellView
 		sprite = new Sprite();
 		sprite.mouseChildren = false;
 		sprite.useHandCursor = sprite.buttonMode = true;
-		//sprite.scaleY = 3 / 4;
-		trace(sprite.name);
-		//sprite.alpha = (4+ center.elevation)/5;
-		//sprite.alpha = center.elevation;
 		
-		//sprite.name = "cellView" + uid++;// center.point.x + ',' + center.point.y;
-		//sprite.mouseChildren = false;
+		slopes = [];
 		
 		this.baseColor = colorByBiome[center.biome];
 		//sprite.addChild(createBorders());
 		//sprite.addChild(createCorners());
 		
-		//baseColor = !center.water 
-		//? RndColor.green(0.5, 1) + RndColor.red(0.25, 0.5) 
-		//: 0x0080ff;
-		
 		trace(baseColor);
 		sprite.addChild(createZone(baseColor));
-		sprite.addChild(createSlopes(/*0.25*/));
-		sprite.addChild(createZone(0x0080ff, center.moisture/2));
-		//sprite.addChild(createCenter());
+		if (center.biome != Biome.LAKE)	sprite.addChild(createSlopes(/*0.25*/));
+		sprite.addChild(createZone(0x0080ff, center.moisture / 2));
 		
-		//var bc = new ARGB();
-		//bc.
+		if(!center.water)	sprite.addChild(createCenter(0.25));
 		
-		//var defaultOffset = Math.round((center.elevation - 0.25) * 256);
-		//trace(defaultOffset);
-		//defaultOffset = 0;
-		//defaultColorTransform = new ColorTransform();
-		//highlightedColorTransform = defaultColorTransform.clone();
-		//highlightedColorTransform.redOffset = highlightedColorTransform.greenOffset = highlightedColorTransform.blueOffset = defaultOffset * 2;
+		
 	
 	}
 	
@@ -91,7 +76,7 @@ class CellView
 	{
 		var o = lightness * 256;
 		sprite.transform.colorTransform = new ColorTransform(1,1,1,1,o,o,o);
-		trace(center.border, center.coast, center.moisture, center.biome);
+		//trace(center.border, center.coast, center.moisture, center.biome);
 	}
 	
 	function createZone(color:Int, alpha:Float=1):Sprite
@@ -100,7 +85,7 @@ class CellView
 		
 		var graphics = sprite.graphics;
 		
-		trace(baseColor);
+		//trace(baseColor);
 		graphics.beginFill(color, alpha);
 		var corners = center.corners.copy();
 		corners.sort(function(cornerA:Corner<CellView>, cornerB:Corner<CellView>)
@@ -110,60 +95,49 @@ class CellView
 			return Std.int(va.getAngle()*100 - vb.getAngle()*100);
 		});
 		var lastCorner = corners[corners.length - 1];
-		graphics.moveTo(lastCorner.point.x, lastCorner.point.y);
+		graphics.moveTo(lastCorner.elevatedPoint.x, lastCorner.elevatedPoint.y);
 		for (corner in corners)
 		{
-			graphics.lineTo(corner.point.x, corner.point.y);
+			graphics.lineTo(corner.elevatedPoint.x, corner.elevatedPoint.y);
 		}
 		graphics.endFill();
 		
 		return sprite;
 	}
-	//private static var lightVector:Vector3D = new Vector3D(-1, -1, 0);
-	function calculateLighting(p:Center<CellView>, r:Corner<CellView>, s:Corner<CellView>):Float {
-		var A:Vector3D = new Vector3D(p.point.x, p.point.y, p.elevation);
-		var B:Vector3D = new Vector3D(r.point.x, r.point.y, r.elevation);
-		var C:Vector3D = new Vector3D(s.point.x, s.point.y, s.elevation);
-		var normal:Vector3D = B.subtract(A).crossProduct(C.subtract(A));
-		if (normal.z < 0) { normal.scaleBy( -1); }
-		normal.normalize();
-		var light:Float = 0.5 + 35*normal.dotProduct(lightVector);
-		if (light < 0) light = 0;
-		if (light > 1) light = 1;
-		return light;
-    }
 	
 	function createSlopes(alpha:Float=1):Sprite
 	{
 		var sprite = new Sprite();
-		var graphics = sprite.graphics;
 		
 		for (edge in center.borders)
 		{
 			if (edge.v0 == null || edge.v1 == null) continue;
 			
-			var light = calculateLighting(center, edge.v0, edge.v1);
-			var lightColor = light < 0.5?0x000000:0xffffff;
-			var lightAlpha = Math.abs(light - 0.5);
-			
-			graphics.beginFill(lightColor, lightAlpha*alpha);
-			graphics.moveTo(center.point.x, center.point.y);
-			graphics.lineTo(edge.v0.point.x, edge.v0.point.y);
-			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
-			//graphics.lineTo(center.point.x, center.point.y);
-			graphics.endFill();
+			var slope = new Slope(center, edge);
+			sprite.addChild(slope);
+			slopes.push(slope);
 		}
-			
 		
 		return sprite;
 	}
 	
-	function createCenter():Sprite
+	
+	public function updateSlopes(lightVector:Vector3D)
+	{
+		for (slope in slopes)
+		{
+			slope.update(lightVector);
+		}
+	}
+	
+	
+	
+	function createCenter(alpha:Float=1):Sprite
 	{
 		var sprite = new Sprite();
 		var graphics = sprite.graphics;
-		graphics.beginFill(0xffffff);
-		graphics.drawCircle(center.point.x, center.point.y, 1);
+		graphics.beginFill(0xffffff, alpha);
+		graphics.drawCircle(center.elevatedPoint.x, center.elevatedPoint.y, 1);
 		graphics.endFill();
 		return sprite;
 	}
@@ -183,8 +157,8 @@ class CellView
 		if (edge.v0 != null && edge.v1 != null)
 		{
 			graphics.lineStyle(2, 0x000000, 0.125);
-			graphics.moveTo(edge.v0.point.x, edge.v0.point.y);
-			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
+			graphics.moveTo(edge.v0.elevatedPoint.x, edge.v0.elevatedPoint.y);
+			graphics.lineTo(edge.v1.elevatedPoint.x, edge.v1.elevatedPoint.y);
 		}
 	}
 	
