@@ -61,7 +61,7 @@ class CellView
 		//sprite.addChild(createBorders());
 		//sprite.addChild(createCorners());
 		
-		trace(baseColor);
+		//trace(baseColor);
 		sprite.addChild(createZone(baseColor));
 		if (center.biome != Biome.LAKE)	sprite.addChild(createSlopes(/*0.25*/));
 		sprite.addChild(createZone(0x0080ff, center.moisture / 2));

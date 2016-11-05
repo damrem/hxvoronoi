@@ -1,6 +1,7 @@
 package;
 
 import hxlpers.geom.Polygon;
+import openfl.display.FPS;
 import openfl.display.Graphics;
 import openfl.display.Shape;
 import openfl.display.Sprite;
@@ -38,7 +39,7 @@ class Sample extends Sprite
 		
 		var map = new VoronoiMap( { width:stg.stageWidth, height:stg.stageHeight } );
 		
-		for (i in 0...1000)
+		for (i in 0...500)
 		{
 			map.points.push(new Point(Math.random() * stg.stageWidth, Math.random() * stg.stageHeight));
 		}
@@ -91,6 +92,8 @@ class Sample extends Sprite
 		//zoneCanvas.addEventListener(MouseEvent.ROLL_OUT, onMouseOverOut);
 		zoneCanvas.addEventListener(MouseEvent.MOUSE_MOVE, updateLight);
 		updateLight();
+		
+		addChild(new FPS());
 		
 	}
 	
@@ -176,7 +179,7 @@ class Sample extends Sprite
 	
 	function createEdge(edge:Edge<CellView>, graphics:Graphics)
 	{
-		if (edge.v0 != null && edge.v1 != null && !edge.v0.water && !edge.v1.water)
+		if (edge.v0 != null && edge.v1 != null && !edge.d0.water && !edge.d1.water)
 		{
 			var isRiver = edge.river >= 1;
 			var edgeThickness = isRiver ? 2 : 1;
@@ -204,7 +207,7 @@ class Sample extends Sprite
 		graphics.beginFill(0xffffff);
 		graphics.drawCircle(corner.point.x, corner.point.y, 1);
 		graphics.endFill();
-		trace( corner.elevation);
+		//trace( corner.elevation);
 	}
 	
 	
