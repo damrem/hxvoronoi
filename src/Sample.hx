@@ -39,7 +39,7 @@ class Sample extends Sprite
 		
 		var map = new VoronoiMap( { width:stg.stageWidth, height:stg.stageHeight } );
 		
-		for (i in 0...500)
+		for (i in 0...Conf.NB_CELLS)
 		{
 			map.points.push(new Point(Math.random() * stg.stageWidth, Math.random() * stg.stageHeight));
 		}
@@ -93,7 +93,7 @@ class Sample extends Sprite
 		zoneCanvas.addEventListener(MouseEvent.MOUSE_MOVE, updateLight);
 		updateLight();
 		
-		addChild(new FPS());
+		addChild(new FPS(10,10,0xff0000));
 		
 	}
 	
