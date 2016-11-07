@@ -1,6 +1,7 @@
 package;
 
 import hxlpers.geom.Polygon;
+import hxlpers.pooling.Pool;
 import openfl.display.FPS;
 import openfl.display.Graphics;
 import openfl.display.Shape;
@@ -28,12 +29,15 @@ class Sample extends Sprite
 	public static inline var ELEVATION_FACTOR:Float = 100;
 	var cellViewBySpriteName:Map<String, Zone>;
 	var lightVector:Vector3D = new Vector3D(-1, -1, 0);
+	var vector3DPool:Pool<Vector3D>;
 	
 	public function new() 
 	{
 		super();
 		
 		cellViewBySpriteName = new Map<String, Zone>();
+		
+		vector3DPool = new Pool<Vector3D>(Vector3D, 5000);
 		
 		var stg = Lib.current.stage;
 		
@@ -111,7 +115,7 @@ class Sample extends Sprite
 	
 	function createZone(center:Center<Zone>):Zone
 	{
-		return new Zone(center);
+		return new Zone(center, vector3DPool);
 	}
 	
 	private function onMouseOverOut(e:MouseEvent):Void 

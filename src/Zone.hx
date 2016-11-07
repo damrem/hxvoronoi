@@ -1,5 +1,6 @@
 package;
 import flash.display.DisplayObjectContainer;
+import hxlpers.pooling.Pool;
 import lime.math.Vector2;
 import openfl.display.Graphics;
 import openfl.display.Sprite;
@@ -48,10 +49,12 @@ class Zone implements IHasCenter<Zone>
 	var highlightedColorTransform:ColorTransform;
 	var slopes:Array<Slope>;
 	var sortedCorners:Array<Corner<Zone>>;
+	var vector3DPool:Pool<Vector3D>;
 	public var border:Sprite;
 
-	public function new(center:Center<Zone>) 
+	public function new(center:Center<Zone>, vector3DPool:Pool<Vector3D>) 
 	{
+		this.vector3DPool = vector3DPool;
 		this.center = center;
 		
 		slopes = [];
@@ -121,7 +124,7 @@ class Zone implements IHasCenter<Zone>
 		{
 			if (edge.v0 == null || edge.v1 == null) continue;
 			
-			var slope = new Slope(center, edge);
+			var slope = new Slope(center, edge, vector3DPool);
 			sprite.addChild(slope);
 			slopes.push(slope);
 		}

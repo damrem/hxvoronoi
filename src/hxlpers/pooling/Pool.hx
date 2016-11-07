@@ -24,6 +24,7 @@ class Pool<T/*:IRenewable*/>
 		{
 			unused.push(Type.createInstance(cl, []));
 		}
+		trace(unused.length, unused);
 	}
 	
 	inline public function provide():T
@@ -43,7 +44,7 @@ class Pool<T/*:IRenewable*/>
 	
 	inline public function retake(item:T):T
 	{
-		unused.push(item);
+		unused.unshift(item);
 		nbRetaken++;
 		return item;
 	}
