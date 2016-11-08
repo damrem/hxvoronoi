@@ -7,6 +7,6 @@ package;
 class Conf
 {
 
-	public static inline var NB_CELLS:Int = 100;
+	public static inline var NB_CELLS:Int = 500;
 	
 }

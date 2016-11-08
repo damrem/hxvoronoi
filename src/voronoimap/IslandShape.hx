@@ -111,6 +111,14 @@ class IslandShape {
 			return (seed = seed.nextParkMiller()).toBool();
 		};
 	}
+	
+	static public function makeRandom(chance:Float=0.5):Point->Bool
+	{
+		return function(q:Point):Bool
+		{
+			return Math.random() < chance;
+		}
+	}
 
 
 }

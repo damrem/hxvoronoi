@@ -54,6 +54,8 @@ class Sample extends Sprite
 		//map.islandShape = IslandShape.makeBlob();
 		//map.islandShape = IslandShape.makeNoise(123456789);
 		//map.islandShape = IslandShape.makePerlin(10);
+		map.islandShape = IslandShape.makeSquare();
+		map.islandShape = IslandShape.makeRandom(0.75);
 		
 		map.go3AssignElevations(0.3);
 		
