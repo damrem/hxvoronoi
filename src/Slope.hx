@@ -30,6 +30,7 @@ class Slope extends Sprite
 	var _crossProduct:Vector3D;
 	var vector3DPool:Pool<Vector3D>;
 	var _subtractedVectors:Array<Vector3D>;
+	var _transform:openfl.geom.Transform;
 	
 	public function new(center:Center<Zone>, edge:Edge<Zone>, vector3DPool:Pool<Vector3D>) 
 	{
@@ -38,6 +39,7 @@ class Slope extends Sprite
 		
 		_subtractedVectors = [vector3DPool.provide(), vector3DPool.provide()];
 		
+		_transform = transform;
 		colorTransform = new ColorTransform();
 		
 		_a = new Vector3D();
@@ -61,8 +63,8 @@ class Slope extends Sprite
 		colorTransform.alphaMultiplier = Math.abs(light - 0.5);
 		colorTransform.redOffset = colorTransform.greenOffset = colorTransform.blueOffset = light < 0.5? -255:255;
 		
-		transform.colorTransform = blankColorTransform;
-		transform.colorTransform = colorTransform;
+		_transform.colorTransform = blankColorTransform;
+		_transform.colorTransform = colorTransform;
 	}
 	
 	function calculateLighting(lightVector:Vector3D, p:Center<Zone>, r:Corner<Zone>, s:Corner<Zone>):Float 

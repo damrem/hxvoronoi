@@ -24,7 +24,7 @@ class Pool<T/*:IRenewable*/>
 		{
 			unused.push(Type.createInstance(cl, []));
 		}
-		trace(unused.length, unused);
+		//trace(unused.length, unused);
 	}
 	
 	inline public function provide():T
