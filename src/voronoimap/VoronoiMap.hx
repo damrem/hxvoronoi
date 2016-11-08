@@ -57,6 +57,16 @@ class VoronoiMap extends VoronoiGrid<Zone>{
 	 * @param	lakeThreshold 0 to 1, fraction of water corners for water polygon, default = 0.3
 	 */
 	public function go3AssignElevations( lakeThreshold = DEFAULT_LAKE_THRESHOLD ) : Void {
+		
+		for (center in centers)
+		{
+			center.elevationFactor = elevationFactor;
+		}
+		for (corner in corners)
+		{
+			corner.elevationFactor = elevationFactor;
+		}
+		
 		// Determine the elevations and water at Voronoi corners.
 		assignCornerElevations();
 
@@ -70,7 +80,7 @@ class VoronoiMap extends VoronoiGrid<Zone>{
 		// largest ring around the island, and therefore should more
 		// land area than the highest elevation, which is the very
 		// center of a perfectly circular island.
-		redistributeElevations(landCorners(corners));
+		//redistributeElevations(landCorners(corners));
 
 		// Assign elevations to non-land corners
 		for (q in corners) {

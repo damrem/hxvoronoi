@@ -4,10 +4,12 @@ import flash.Vector;
 import hxlpers.pooling.Pool;
 import openfl.display.Sprite;
 import openfl.geom.ColorTransform;
+import openfl.geom.Transform;
 import openfl.geom.Vector3D;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
 import voronoimap.graph.Edge;
+using hxlpers.openfl.geom.Vector3DExtender;
 
 /**
  * ...
@@ -29,23 +31,30 @@ class Slope extends Sprite
 	var _cMinusA:openfl.geom.Vector3D;
 	var _crossProduct:Vector3D;
 	var vector3DPool:Pool<Vector3D>;
-	var _subtractedVectors:Array<Vector3D>;
-	var _transform:openfl.geom.Transform;
+	//var _subtractedVectors:Array<Vector3D>;
+	var _subtractedVectorA:Vector3D;
+	var _subtractedVectorB:Vector3D;
+	var _transform:Transform;
 	
 	public function new(center:Center<Zone>, edge:Edge<Zone>, vector3DPool:Pool<Vector3D>) 
 	{
 		super();
 		this.vector3DPool = vector3DPool;
 		
-		_subtractedVectors = [vector3DPool.provide(), vector3DPool.provide()];
+		//_subtractedVectors = [vector3DPool.provide(), vector3DPool.provide()];
+		_subtractedVectorA = vector3DPool.provide();
+		_subtractedVectorB = vector3DPool.provide();
 		
 		_transform = transform;
 		colorTransform = new ColorTransform();
 		
-		_a = new Vector3D();
-		_b = new Vector3D();
-		_c = new Vector3D();
-		_crossProduct = new Vector3D();
+		_a = vector3DPool.provide();
+		_b = vector3DPool.provide();
+		_c = vector3DPool.provide();
+		_bMinusA = vector3DPool.provide();
+		_cMinusA = vector3DPool.provide();
+		_crossProduct = vector3DPool.provide();
+		_normal = vector3DPool.provide();
 		
 		this.edge = edge;
 		this.center = center;
@@ -81,35 +90,34 @@ class Slope extends Sprite
 		_c.y = s.point.y;
 		_c.z = s.elevation;
 		
-		_bMinusA = subtractVector3D(_b, _a, 0);
-		_cMinusA = subtractVector3D(_c, _a, 1);
-		_normal = crossProductVector3D(_bMinusA, _cMinusA);
+		subtractVector3D(_bMinusA, _b, _a);
+		subtractVector3D(_cMinusA, _c, _a);
+		crossProductVector3D(_normal, _bMinusA, _cMinusA);
 		
-		if (_normal.z < 0) { _normal.scaleBy( -1); }
-		_normal.normalize();
-		light = 0.5 + 35 * _normal.dotProduct(lightVector);
+		if (_normal.z < 0) { _normal.inlineScaleBy( -1); }
+		_normal.inlineNormalize();
+		light = 0.5 + 35 * _normal.inlineDotProduct(lightVector);
 		if (light < 0) light = 0;
 		if (light > 1) light = 1;
 		return light;
     }
 	
-	function subtractVector3D(a:Vector3D, b:Vector3D, i:Int):Vector3D
+	inline function subtractVector3D(target:Vector3D, a:Vector3D, b:Vector3D)
 	{
-		_subtractedVectors[i].x = a.x - b.x;
-		_subtractedVectors[i].y = a.y - b.y;
-		_subtractedVectors[i].z = a.z - b.z;
-		_subtractedVectors[i].w = 0;
-		return _subtractedVectors[i];
+		target.x = a.x - b.x;
+		target.y = a.y - b.y;
+		target.z = a.z - b.z;
+		target.w = 0;
 	}
 	
-	function crossProductVector3D(a:Vector3D, b:Vector3D):Vector3D
+	inline function crossProductVector3D(target:Vector3D, a:Vector3D, b:Vector3D)
 	{
-		_crossProduct.x = a.y * b.z - a.z * b.y;
-		_crossProduct.y = a.z * b.x - a.x * b.z;
-		_crossProduct.z = a.x * b.y - a.y * b.x;
-		_crossProduct.w = 1;
-		return _crossProduct;
+		target.x = a.y * b.z - a.z * b.y;
+		target.y = a.z * b.x - a.x * b.z;
+		target.z = a.x * b.y - a.y * b.x;
+		target.w = 1;
 	}
+	
 	
 	
 	

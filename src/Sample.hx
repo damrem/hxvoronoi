@@ -1,6 +1,7 @@
 package;
 
-import hxlpers.geom.Polygon;
+import damrem.prim.Cell;
+import damrem.prim.PrimMaze;
 import hxlpers.pooling.Pool;
 import openfl.display.FPS;
 import openfl.display.Graphics;
@@ -13,7 +14,6 @@ import openfl.Lib;
 import voronoimap.graph.Center;
 import voronoimap.graph.Corner;
 import voronoimap.graph.Edge;
-import voronoimap.IHasCenter;
 import voronoimap.IslandShape;
 import voronoimap.VoronoiMap;
 using hxlpers.lime.math.Vector2Extender;
@@ -26,7 +26,7 @@ class Sample extends Sprite
 {
 
 	//var cellViewByCenter:Map<Center, CellView>;
-	public static inline var ELEVATION_FACTOR:Float = 100;
+	
 	var cellViewBySpriteName:Map<String, Zone>;
 	var lightVector:Vector3D = new Vector3D(-1, -1, 0);
 	var vector3DPool:Pool<Vector3D>;
@@ -41,7 +41,7 @@ class Sample extends Sprite
 		
 		var stg = Lib.current.stage;
 		
-		var map = new VoronoiMap( { width:stg.stageWidth, height:stg.stageHeight } );
+		var map = new VoronoiMap( { width:stg.stageWidth, height:stg.stageHeight }, Conf.ELEVATION_FACTOR );
 		
 		for (i in 0...Conf.NB_CELLS)
 		{
@@ -50,14 +50,44 @@ class Sample extends Sprite
 		map.go1ImprovePoints(8);
 		map.go2BuildGraph(createZone);
 		
-		map.islandShape = IslandShape.makeRadial(1);
+		map.islandShape = IslandShape.makeRadial(1, 2);
 		//map.islandShape = IslandShape.makeBlob();
 		//map.islandShape = IslandShape.makeNoise(123456789);
 		//map.islandShape = IslandShape.makePerlin(10);
-		map.islandShape = IslandShape.makeSquare();
-		map.islandShape = IslandShape.makeRandom(0.75);
+		//map.islandShape = IslandShape.makeSquare();
+		//map.islandShape = IslandShape.makeRandom(0.75);
 		
-		map.go3AssignElevations(0.3);
+		var mazeW = 37;
+		var mazeH = 23;
+		var maze = new PrimMaze(mazeW, mazeH);
+		var halfMazeW = mazeW / 2;
+		var halfMazeH = mazeH / 2;
+		
+		var cells = maze.cells.map(function(row:Array<Cell>):Array<Bool>
+		{
+			return row.map(function(cell:Cell):Bool
+			{
+				var dx = cell.x - halfMazeW;
+				var dy = cell.y - halfMazeH;
+				var d = Math.sqrt(dx * dx + dy * dy);
+				trace(d);
+				return cell.type >= 2 && d < 10;
+			});
+		});
+		
+		//var bitmap = new Array<Array<Bool>>();
+		/*for (y in 0...100)
+		{
+			bitmap[y] = [];
+			for (x in 0...100)
+			{
+				bitmap[y][x] = x*y<500;
+			}
+		}*/
+		
+		map.islandShape = IslandShape.makeBitmap(cells);
+		
+		map.go3AssignElevations(1);
 		
 		
 		map.go4AssignMoisture(99);
@@ -75,7 +105,7 @@ class Sample extends Sprite
 		cornerCanvas.name = "cornerCanvas";
 		
 		//zoneCanvas.alpha = edgeCanvas.alpha = 0.25;
-		//zoneCanvas.alpha = 0.25;
+		zoneCanvas.alpha = 0.25;
 		
 		
 		/*var centerCanvas = drawPoints(map.centers.map(function(center)

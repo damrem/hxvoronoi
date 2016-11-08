@@ -15,6 +15,7 @@ using Lambda;
 using com.nodename.delaunay.BoolExtender;
 
 class VoronoiGrid<T:(IHasCenter<T>)> {
+	//var elevationFactor:Float;
 
 	public static inline var DEFAULT_LLOYD_ITERATIONS = 2;
 	public static inline var DEFAULT_NUMBER_OF_POINTS = 1000;
@@ -48,8 +49,9 @@ class VoronoiGrid<T:(IHasCenter<T>)> {
 	 * @param	size width and height of map
 	 * @param	riverChance 0 = no rivers, > 0 = more rivers, default = map area / 4
 	 */
-	public function new( size : Size)
+	public function new( size : Size/*, elevationFactor:Float*/)
 	{
+		//this.elevationFactor = elevationFactor;
 		SIZE = size;
 		reset();
 	}
@@ -227,7 +229,7 @@ class VoronoiGrid<T:(IHasCenter<T>)> {
       // Build Center objects for each of the points, and a lookup map
       // to find those Center objects again as we build the graph
       for (point in points) {
-          p = new Center<T>();//FIXME
+          p = new Center<T>(/*elevationFactor*/);//FIXME
 		  p.data = dataConstructor(p);
 		  p.data.center = p;
           p.index = centers.length;

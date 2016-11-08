@@ -7,7 +7,7 @@ import openfl.geom.Point;
  */
 class AbstractGraphPoint extends AbstractGraphItem
 {
-	var elevationFactor:Float;
+	public var elevationFactor:Float;
 	public var point:Point;  // location
 	
 	public var elevation:Float;  // 0.0-1.0
@@ -24,9 +24,9 @@ class AbstractGraphPoint extends AbstractGraphItem
     public var border:Bool;  // at the edge of the map
     public var moisture:Float;  // 0.0-1.0
 
-	public function new(elevationFactor:Float=50)
+	public function new()
 	{
-		this.elevationFactor = elevationFactor;
+		//this.elevationFactor = elevationFactor;
 		
 	}
 	
